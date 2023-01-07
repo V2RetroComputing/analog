@@ -1,0 +1,3 @@
+[submodule "v2-analog-rev1/lib/littlefs"]
+	path = v2-analog-rev1/lib/littlefs
+	url = https://github.com/lurk101/littlefs-lib

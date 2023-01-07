@@ -1,0 +1,54 @@
+Name      PicoPal;
+Partno    U5;
+Date      27/11/22;
+Revision  01;
+Designer  David Kuder;
+Company   Grizzly Adams;
+Assembly  None;
+Location  None;
+Device    g16V8;
+
+/****************************************************************/
+/*                                                              */
+/* Apple II Pi Pico Address Logic                               */
+/*                                                              */
+/****************************************************************/
+/* Allowable Target Device Types :  PAL16V8                     */
+/****************************************************************/
+
+/**  Inputs  **/
+
+PIN 1           = clock;        /* Register Clock               */
+PIN 2           = !RESET;       /* System Reset                 */
+PIN [3..6]      = [BSEL3..0];   /* Buffer Mode Select           */
+
+PIN 7           = !DEVSELECT;   /* $C0nX Selected -> 16B I/O    */
+PIN 8           = !IOSELECT;    /* $CnXX Selected -> Base ROM   */
+PIN 9           = !IOSTROBE;    /* $C8XX Selected -> Extd ROM   */
+PIN 11          = A10;
+PIN [13..14]    = [A9..8];
+
+/**  Outputs  **/
+
+PIN 12          = !CARDSELECT;  /* Card Select                  */
+
+/**  Logic Overflow  **/
+PIN 15          = EXTOFF;       /* Combinatorial                */
+PIN 16          = EXTSELECT;    /* Combinatorial                */
+PIN 17          = EXTENABLE;    /* Combinatorial                */
+PIN 18          = EXTDISABLE;   /* Combinatorial                */
+
+/** Logic Equations **/
+
+/* $CFxx disables */
+EXTOFF = IOSTROBE & [A10..8]:'b'111;
+
+/* Implement an SR Latch */
+EXTDISABLE = !(EXTENABLE # DEVSELECT);
+EXTENABLE = !(EXTDISABLE # RESET # EXTOFF # [BSEL3..0]:'b'0110);
+
+/* $C8XX and extended rom is enabled */
+EXTSELECT = EXTENABLE & IOSTROBE;
+
+/* Tell the Pico that the Apple wants attention. */
+CARDSELECT = DEVSELECT # IOSELECT # EXTSELECT;

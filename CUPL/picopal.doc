@@ -1,0 +1,205 @@
+
+*******************************************************************************
+                                    PicoPal
+*******************************************************************************
+
+CUPL(WM)        5.0a Serial# MW-10400000
+Device          g16v8ma  Library DLIB-h-40-8
+Created         Mon Nov 28 03:36:52 2022
+Name            PicoPal
+Partno          U5
+Revision        01
+Date            27/11/22
+Designer        David Kuder
+Company         Grizzly Adams
+Assembly        None
+Location        None
+
+===============================================================================
+                            Expanded Product Terms
+===============================================================================
+
+CARDSELECT =>
+    DEVSELECT
+  # IOSELECT
+  # EXTSELECT
+
+EXTDISABLE =>
+    EXTENABLE
+  # DEVSELECT
+
+EXTENABLE =>
+    EXTDISABLE
+  # RESET
+  # EXTOFF
+  # !BSEL0 & BSEL1 & BSEL2 & !BSEL3
+
+EXTOFF =>
+    !A8 & !A9 & !A10 & IOSTROBE
+
+EXTSELECT =>
+    EXTENABLE & IOSTROBE
+
+A8.oe  =>
+    0 
+
+A9.oe  =>
+    0 
+
+CARDSELECT.oe  =>
+    1 
+
+EXTDISABLE.oe  =>
+    1 
+
+EXTENABLE.oe  =>
+    1 
+
+EXTOFF.oe  =>
+    1 
+
+EXTSELECT.oe  =>
+    1 
+
+
+===============================================================================
+                                 Symbol Table
+===============================================================================
+
+Pin Variable                                    Pterms   Max     Min    
+Pol   Name              Ext     Pin     Type     Used   Pterms  Level   
+--- --------            ---     ---     ----    ------  ------  -----   
+
+    A8                          14       V        -       -       -     
+    A9                          13       V        -       -       -     
+    A10                         11       V        -       -       -     
+    BSEL0                       6        V        -       -       -     
+    BSEL1                       5        V        -       -       -     
+    BSEL2                       4        V        -       -       -     
+    BSEL3                       3        V        -       -       -     
+ !  CARDSELECT                  12       V        3       7       1     
+ !  DEVSELECT                   7        V        -       -       -     
+    EXTDISABLE                  18       V        2       7       1     
+    EXTENABLE                   17       V        4       7       1     
+    EXTOFF                      15       V        1       7       1     
+    EXTSELECT                   16       V        1       7       1     
+ !  IOSELECT                    8        V        -       -       -     
+ !  IOSTROBE                    9        V        -       -       -     
+ !  RESET                       2        V        -       -       -     
+    clock                       1        V        -       -       -     
+    A8                  oe      14       D        1       1       0     
+    A9                  oe      13       D        1       1       0     
+    CARDSELECT          oe      12       D        1       1       0     
+    EXTDISABLE          oe      18       D        1       1       0     
+    EXTENABLE           oe      17       D        1       1       0     
+    EXTOFF              oe      15       D        1       1       0     
+    EXTSELECT           oe      16       D        1       1       0     
+
+
+LEGEND    D : default variable         F : field      G : group
+          I : intermediate variable    N : node       M : extended node
+          U : undefined                V : variable   X : extended variable
+          T : function
+
+
+===============================================================================
+                                   Fuse Plot
+===============================================================================
+
+Syn   02192 - Ac0   02193 - 
+
+Pin #19  02048  Pol x  02120  Ac1 - 
+ 00000 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00032 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00064 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00096 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00128 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00160 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00192 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00224 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #18  02049  Pol x  02121  Ac1 - 
+ 00256 -------------------------------- 
+ 00288 ----------x--------------------- 
+ 00320 ---------------------x---------- 
+ 00352 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00384 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00416 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00448 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00480 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #17  02050  Pol x  02122  Ac1 - 
+ 00512 -------------------------------- 
+ 00544 ------x------------------------- 
+ 00576 -x------------------------------ 
+ 00608 ------------------x------------- 
+ 00640 -----x--x---x----x-------------- 
+ 00672 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00704 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00736 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #16  02051  Pol -  02123  Ac1 - 
+ 00768 -------------------------------- 
+ 00800 ----------x------------------x-- 
+ 00832 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00864 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00896 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00928 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00960 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00992 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #15  02052  Pol -  02124  Ac1 - 
+ 01024 -------------------------------- 
+ 01056 -----------------------x---x-x-x 
+ 01088 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01120 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01152 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01184 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01216 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01248 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #14  02053  Pol x  02125  Ac1 - 
+ 01280 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01312 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01344 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01376 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01408 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01440 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01472 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01504 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #13  02054  Pol x  02126  Ac1 - 
+ 01536 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01568 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01600 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01632 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01664 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01696 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01728 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01760 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #12  02055  Pol x  02127  Ac1 - 
+ 01792 -------------------------------- 
+ 01824 ---------------------x---------- 
+ 01856 -------------------------x------ 
+ 01888 --------------x----------------- 
+ 01920 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01952 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01984 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 02016 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+
+
+LEGEND    X : fuse not blown 
+          - : fuse blown 
+
+===============================================================================
+                                 Chip Diagram
+===============================================================================
+
+                               ______________
+                              |   PicoPal    |
+                    clock x---|1           20|---x Vcc                      
+                   !RESET x---|2           19|---x                          
+                    BSEL3 x---|3           18|---x EXTDISABLE               
+                    BSEL2 x---|4           17|---x EXTENABLE                
+                    BSEL1 x---|5           16|---x EXTSELECT                
+                    BSEL0 x---|6           15|---x EXTOFF                   
+               !DEVSELECT x---|7           14|---x A8                       
+                !IOSELECT x---|8           13|---x A9                       
+                !IOSTROBE x---|9           12|---x !CARDSELECT              
+                      GND x---|10          11|---x A10                      
+                              |______________|
+

@@ -1,0 +1,310 @@
+Modules list:
+-------------
+uploadfont.o:
+    CODE              Offs=000000  Size=000061  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=00002C  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(_directerrno.o):
+    CODE              Offs=000061  Size=00000A  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(_file.o):
+    DATA              Offs=000000  Size=00001E  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(_mappederrno.o):
+    CODE              Offs=00006B  Size=000010  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(_oserror.o):
+    BSS               Offs=000000  Size=000001  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(_seterrno.o):
+    CODE              Offs=00007B  Size=000009  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(addeqsp.o):
+    CODE              Offs=000084  Size=000011  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(addysp.o):
+    CODE              Offs=000095  Size=00000E  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(callmain.o):
+    CODE              Offs=0000A3  Size=000017  Align=00001  Fill=0000
+    DATA              Offs=00001E  Size=000004  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(condes.o):
+    CODE              Offs=0000BA  Size=00000C  Align=00001  Fill=0000
+    DATA              Offs=000022  Size=000025  Align=00001  Fill=0000
+    ONCE              Offs=000000  Size=00000C  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(cout.o):
+    LOWCODE           Offs=000000  Size=00000A  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(crt0.o):
+    CODE              Offs=0000C6  Size=000012  Align=00001  Fill=0000
+    RODATA            Offs=00002C  Size=000007  Align=00001  Fill=0000
+    DATA              Offs=000047  Size=000003  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000034  Align=00001  Fill=0000
+    ONCE              Offs=00000C  Size=00006A  Align=00001  Fill=0000
+    INIT              Offs=000000  Size=00001D  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(decsp2.o):
+    CODE              Offs=0000D8  Size=00000D  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(dosdetect.o):
+    DATA              Offs=00004A  Size=000001  Align=00001  Fill=0000
+    ONCE              Offs=000076  Size=000014  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(errno.o):
+    BSS               Offs=000001  Size=000002  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(exehdr.o):
+    EXEHDR            Offs=000000  Size=00003A  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(filedes.o):
+    CODE              Offs=0000E5  Size=000016  Align=00001  Fill=0000
+    DATA              Offs=00004B  Size=000020  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(incsp2.o):
+    CODE              Offs=0000FB  Size=000016  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(incsp4.o):
+    CODE              Offs=000111  Size=000005  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(ldaxsp.o):
+    CODE              Offs=000116  Size=000009  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(mli.o):
+    BSS               Offs=000003  Size=000012  Align=00001  Fill=0000
+    DATA              Offs=00006B  Size=000024  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(oserror.o):
+    CODE              Offs=00011F  Size=000016  Align=00001  Fill=0000
+    RODATA            Offs=000033  Size=000032  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(popptr1.o):
+    CODE              Offs=000135  Size=00000E  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(pushax.o):
+    CODE              Offs=000143  Size=00001A  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(pushwsp.o):
+    CODE              Offs=00015D  Size=00001C  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(puts.o):
+    CODE              Offs=000179  Size=000068  Align=00001  Fill=0000
+    DATA              Offs=00008F  Size=000001  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(rwcommon.o):
+    CODE              Offs=0001E1  Size=00003D  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(strlen.o):
+    CODE              Offs=00021E  Size=000016  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(write.o):
+    CODE              Offs=000234  Size=000070  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(zerobss.o):
+    CODE              Offs=0002A4  Size=000023  Align=00001  Fill=0000
+/share/cc65/lib/apple2.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000080  000099  00001A  00001
+EXEHDR                003FC6  003FFF  00003A  00001
+STARTUP               004000  004033  000034  00001
+LOWCODE               004034  00403D  00000A  00001
+CODE                  00403E  004304  0002C7  00001
+RODATA                004305  004369  000065  00001
+DATA                  00436A  0043F9  000090  00001
+INIT                  0043FA  004416  00001D  00001
+BSS                   004417  00442B  000015  00001
+ONCE                  004417  0044A2  00008C  00001
+
+
+Exports list by name:
+---------------------
+COUT                      004034 RLA    __BSS_RUN__               004417 RLA    
+__BSS_SIZE__              000015 REA    __CONSTRUCTOR_COUNT__     000001 REA    
+__CONSTRUCTOR_TABLE__     0044A1 RLA    __DESTRUCTOR_COUNT__      000000 REA    
+__DESTRUCTOR_TABLE__      00436A RLA    __EXEHDR__                000001 REA    
+__FILETYPE__              000006 REA    __HIMEM__                 009600 REA    
+__LCADDR__                00D400 REA    __LCSIZE__                000C00 REA    
+__LC_LAST__               00D400 RLA    __LC_START__              00D400 RLA    
+__MAIN_LAST__             0044A3 RLA    __MAIN_START__            004000 RLA    
+__ONCE_LOAD__             004417 RLA    __ONCE_RUN__              004417 RLA    
+__ONCE_SIZE__             00008C REA    __STACKSIZE__             000800 REA    
+__STARTUP__               000001 REA    __directerrno             00409F RLA    
+__dos_type                0043B4 RLA    __errno                   004418 RLA    
+__mappederrno             0040A9 RLA    __oserror                 004417 RLA    
+__osmaperrno              00415D RLA    __seterrno                0040B9 RLA    
+_main                     00403E RLA    _puts                     0041B7 RLA    
+_stdout                   004384 RLA    _strlen                   00425C RLA    
+_write                    004272 RLA    addeq0sp                  0040C2 RLA    
+addysp                    0040D4 RLA    callmain                  0040E1 RLA    
+callmli                   0043D5 RLA    decsp2                    004116 RLA    
+donelib                   0040F8 RLA    fdtab                     0043B5 RLA    
+getfd                     004123 RLA    incsp2                    004141 RLA    
+incsp4                    00414F RLA    initdostype               00448D  LAI   
+initlib                   004417 RLA    ldaxysp                   004156 RLA    
+mliparam                  00441A RLA    popax                     004139 RLA    
+popptr1                   004173 RLA    ptr1                      000088 RLZ    
+ptr2                      00008A RLZ    pusha0                    004183 RLA    
+pushax                    004185 RLA    pushwysp                  00419D RLA    
+rwcommon                  00422C RLA    rwepilog                  00424F RLA    
+rwprolog                  00421F RLA    sp                        000080 RLZ    
+zerobss                   0042E2 RLA    
+
+
+Exports list by value:
+----------------------
+__DESTRUCTOR_COUNT__      000000 REA    __CONSTRUCTOR_COUNT__     000001 REA    
+__EXEHDR__                000001 REA    __STARTUP__               000001 REA    
+__FILETYPE__              000006 REA    __BSS_SIZE__              000015 REA    
+sp                        000080 RLZ    ptr1                      000088 RLZ    
+ptr2                      00008A RLZ    __ONCE_SIZE__             00008C REA    
+__STACKSIZE__             000800 REA    __LCSIZE__                000C00 REA    
+__MAIN_START__            004000 RLA    COUT                      004034 RLA    
+_main                     00403E RLA    __directerrno             00409F RLA    
+__mappederrno             0040A9 RLA    __seterrno                0040B9 RLA    
+addeq0sp                  0040C2 RLA    addysp                    0040D4 RLA    
+callmain                  0040E1 RLA    donelib                   0040F8 RLA    
+decsp2                    004116 RLA    getfd                     004123 RLA    
+popax                     004139 RLA    incsp2                    004141 RLA    
+incsp4                    00414F RLA    ldaxysp                   004156 RLA    
+__osmaperrno              00415D RLA    popptr1                   004173 RLA    
+pusha0                    004183 RLA    pushax                    004185 RLA    
+pushwysp                  00419D RLA    _puts                     0041B7 RLA    
+rwprolog                  00421F RLA    rwcommon                  00422C RLA    
+rwepilog                  00424F RLA    _strlen                   00425C RLA    
+_write                    004272 RLA    zerobss                   0042E2 RLA    
+__DESTRUCTOR_TABLE__      00436A RLA    _stdout                   004384 RLA    
+__dos_type                0043B4 RLA    fdtab                     0043B5 RLA    
+callmli                   0043D5 RLA    __BSS_RUN__               004417 RLA    
+__ONCE_LOAD__             004417 RLA    __ONCE_RUN__              004417 RLA    
+__oserror                 004417 RLA    initlib                   004417 RLA    
+__errno                   004418 RLA    mliparam                  00441A RLA    
+initdostype               00448D  LAI   __CONSTRUCTOR_TABLE__     0044A1 RLA    
+__MAIN_LAST__             0044A3 RLA    __HIMEM__                 009600 REA    
+__LCADDR__                00D400 REA    __LC_LAST__               00D400 RLA    
+__LC_START__              00D400 RLA    
+
+
+Imports list:
+-------------
+COUT (cout.o):
+    write.o                   apple2/write.s:9
+__BSS_RUN__ ([linker generated]):
+    zerobss.o                 common/zerobss.s:8
+__BSS_SIZE__ ([linker generated]):
+    zerobss.o                 common/zerobss.s:8
+__CONSTRUCTOR_COUNT__ ([linker generated]):
+    condes.o                  runtime/condes.s:18
+__CONSTRUCTOR_TABLE__ ([linker generated]):
+    condes.o                  runtime/condes.s:18
+__DESTRUCTOR_COUNT__ ([linker generated]):
+    condes.o                  runtime/condes.s:19
+__DESTRUCTOR_TABLE__ ([linker generated]):
+    condes.o                  runtime/condes.s:19
+__EXEHDR__ (exehdr.o):
+    [linker generated]        /share/cc65/cfg/apple2.cfg:7
+__FILETYPE__ ([linker generated]):
+    exehdr.o                  apple2/exehdr.s:9
+__HIMEM__ ([linker generated]):
+    [linker generated]        /share/cc65/cfg/apple2.cfg:18
+    [linker generated]        /share/cc65/cfg/apple2.cfg:17
+__LCADDR__ ([linker generated]):
+    [linker generated]        /share/cc65/cfg/apple2.cfg:19
+__LCSIZE__ ([linker generated]):
+    [linker generated]        /share/cc65/cfg/apple2.cfg:19
+__LC_LAST__ ([linker generated]):
+    crt0.o                    apple2/crt0.s:13
+__LC_START__ ([linker generated]):
+    crt0.o                    apple2/crt0.s:13
+__MAIN_LAST__ ([linker generated]):
+    exehdr.o                  apple2/exehdr.s:10
+__MAIN_START__ ([linker generated]):
+    exehdr.o                  apple2/exehdr.s:10
+__ONCE_LOAD__ ([linker generated]):
+    crt0.o                    apple2/crt0.s:12
+__ONCE_RUN__ ([linker generated]):
+    [linker generated]        /share/cc65/cfg/apple2.cfg:18
+    [linker generated]        /share/cc65/cfg/apple2.cfg:18
+__ONCE_SIZE__ ([linker generated]):
+    crt0.o                    apple2/crt0.s:12
+__STACKSIZE__ ([linker generated]):
+    [linker generated]        /share/cc65/cfg/apple2.cfg:18
+__STARTUP__ (crt0.o):
+    uploadfont.o              uploadfont.s:13
+__directerrno (_directerrno.o):
+    write.o                   /home/grizzly/cc65/asminc/errno.inc:10
+__dos_type (dosdetect.o):
+    mli.o                     apple2/mli.s:7
+__errno (errno.o):
+    _seterrno.o               /home/grizzly/cc65/asminc/errno.inc:7
+__mappederrno (_mappederrno.o):
+    rwcommon.o                /home/grizzly/cc65/asminc/errno.inc:10
+    write.o                   /home/grizzly/cc65/asminc/errno.inc:10
+__oserror (_oserror.o):
+    rwcommon.o                /home/grizzly/cc65/asminc/errno.inc:7
+    _mappederrno.o            /home/grizzly/cc65/asminc/errno.inc:7
+    _directerrno.o            /home/grizzly/cc65/asminc/errno.inc:7
+__osmaperrno (oserror.o):
+    _mappederrno.o            /home/grizzly/cc65/asminc/errno.inc:8
+__seterrno (_seterrno.o):
+    _mappederrno.o            /home/grizzly/cc65/asminc/errno.inc:9
+    _directerrno.o            /home/grizzly/cc65/asminc/errno.inc:9
+_main (uploadfont.o):
+    callmain.o                runtime/callmain.s:11
+_puts (puts.o):
+    uploadfont.o              uploadfont.s:14
+_stdout (_file.o):
+    puts.o                    ../libwrk/apple2/puts.s:13
+_strlen (strlen.o):
+    puts.o                    ../libwrk/apple2/puts.s:15
+_write (write.o):
+    puts.o                    ../libwrk/apple2/puts.s:16
+addeq0sp (addeqsp.o):
+    uploadfont.o              uploadfont.s:85
+addysp (addysp.o):
+    incsp4.o                  runtime/incsp4.s:8
+callmain (callmain.o):
+    crt0.o                    apple2/crt0.s:11
+callmli (mli.o):
+    rwcommon.o                apple2/mli.inc:131
+    write.o                   apple2/mli.inc:131
+decsp2 (decsp2.o):
+    uploadfont.o              uploadfont.s:85
+donelib (condes.o):
+    crt0.o                    apple2/crt0.s:10
+fdtab (filedes.o):
+    write.o                   apple2/filedes.inc:13
+getfd (filedes.o):
+    rwcommon.o                apple2/filedes.inc:14
+incsp2 (incsp2.o):
+    popptr1.o                 runtime/popptr1.s:8
+    puts.o                    ../libwrk/apple2/puts.s:79
+incsp4 (incsp4.o):
+    uploadfont.o              uploadfont.s:85
+initlib (condes.o):
+    crt0.o                    apple2/crt0.s:10
+ldaxysp (ldaxsp.o):
+    puts.o                    ../libwrk/apple2/puts.s:79
+mliparam (mli.o):
+    rwcommon.o                apple2/mli.inc:130
+    write.o                   apple2/mli.inc:130
+popax (incsp2.o):
+    rwcommon.o                apple2/rwcommon.s:6
+popptr1 (popptr1.o):
+    rwcommon.o                apple2/rwcommon.s:6
+ptr1 (zeropage.o):
+    popptr1.o                 runtime/popptr1.s:9
+    rwcommon.o                /home/grizzly/cc65/asminc/zeropage.inc:12
+    zerobss.o                 common/zerobss.s:9
+    write.o                   /home/grizzly/cc65/asminc/zeropage.inc:12
+    puts.o                    ../libwrk/apple2/puts.s:11
+    uploadfont.o              uploadfont.s:11
+ptr2 (zeropage.o):
+    rwcommon.o                /home/grizzly/cc65/asminc/zeropage.inc:12
+    write.o                   /home/grizzly/cc65/asminc/zeropage.inc:12
+    strlen.o                  common/strlen.s:12
+pusha0 (pushax.o):
+    puts.o                    ../libwrk/apple2/puts.s:79
+pushax (pushax.o):
+    callmain.o                runtime/callmain.s:11
+    puts.o                    ../libwrk/apple2/puts.s:79
+    uploadfont.o              uploadfont.s:85
+pushwysp (pushwsp.o):
+    puts.o                    ../libwrk/apple2/puts.s:79
+rwcommon (rwcommon.o):
+    write.o                   apple2/write.s:8
+rwepilog (rwcommon.o):
+    write.o                   apple2/write.s:8
+rwprolog (rwcommon.o):
+    write.o                   apple2/write.s:8
+sp (zeropage.o):
+    popptr1.o                 runtime/popptr1.s:9
+    pushwsp.o                 runtime/pushwsp.s:8
+    ldaxsp.o                  runtime/ldaxsp.s:8
+    incsp2.o                  runtime/incsp2.s:8
+    addysp.o                  runtime/addysp.s:8
+    pushax.o                  runtime/pushax.s:8
+    decsp2.o                  runtime/decsp2.s:8
+    crt0.o                    /home/grizzly/cc65/asminc/zeropage.inc:11
+    addeqsp.o                 runtime/addeqsp.s:8
+    uploadfont.o              uploadfont.s:10
+zerobss (zerobss.o):
+    crt0.o                    apple2/crt0.s:11
+
