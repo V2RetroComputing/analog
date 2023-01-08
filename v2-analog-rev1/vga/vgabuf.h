@@ -40,18 +40,3 @@ enum {
 #define TERMINAL_BACK       ((terminal_tbcolor>>4) & 0xf)
 #define TERMINAL_BORDER     (terminal_border & 0xf)
 
-extern uint32_t flash_control;
-
-enum {
-    FLASH_STATUS_READY = 0x00,
-    FLASH_STATUS_BUSY  = 0x01,
-    FLASH_STATUS_ECMD  = 0xE0, // ERROR: Unknown Command
-    FLASH_STATUS_EPRM  = 0xE2, // ERROR: Incorrect Parameter
-    FLASH_STATUS_ECRC  = 0xE4, // ERROR: Invalid Checksum
-
-    FLASH_CONTROL_IDLE   = 0x00000000,
-    FLASH_CONTROL_ERASE  = 0x73417245,
-    FLASH_CONTROL_UPLOAD = 0x64704c55,
-    FLASH_CONTROL_REBOOT = 0x74426552,
-};
-
