@@ -21,7 +21,7 @@ static inline void __time_critical_func(shadow_memory)(uint32_t address, uint32_
     // Shadow parts of the Apple's memory by observing the bus write cycles
     if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0) {
         // Mirror Video Memory from MAIN & AUX banks
-        if(terminal_switches && TERMINAL_AUX_WRITE) {
+        if(terminal_switches & TERMINAL_AUX_WRITE) {
             if((address >= 0x400) && (address < 0xC00)) {
                 private_memory[address] = value & 0xff;
             } else if((address >= 0x2000) && (address < 0x6000)) {
@@ -78,11 +78,11 @@ static inline void __time_critical_func(shadow_memory)(uint32_t address, uint32_
                 terminal_switches |= TERMINAL_80COL;
             break;
         case 0x22:
-            if(terminal_switches & TERMINAL_IIGS_REGS)
+            if((terminal_switches & TERMINAL_IIGS_REGS) && ((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0))
                 terminal_tbcolor = value & 0xff;
             break;
         case 0x34:
-            if(terminal_switches & TERMINAL_IIGS_REGS)
+            if((terminal_switches & TERMINAL_IIGS_REGS) && ((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0))
                 terminal_border = value & 0x0f;
             break;
         case 0x50:

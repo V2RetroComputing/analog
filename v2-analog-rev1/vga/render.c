@@ -16,7 +16,9 @@ void render_init() {
     // Initialize the character generator ROM
     memcpy(character_rom, default_character_rom, sizeof(character_rom));
     soft_switches = 0;
-    terminal_switches = TERMINAL_TEST;
+    terminal_switches = TERMINAL_TEST | TERMINAL_IIE_REGS | TERMINAL_IIGS_REGS;
+    terminal_tbcolor = 0x0f;
+    terminal_border = 0x00;
 
     render_test_init();
 }
