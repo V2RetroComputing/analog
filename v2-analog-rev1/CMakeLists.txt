@@ -27,6 +27,8 @@ target_sources(v2-analog-${PICO_BOARD} PUBLIC
     common/abus.c
     common/config.c
     common/main.c
+    diag/businterface.c
+    diag/diag.c
     vga/vgamain.c
     vga/businterface.c
     vga/vgabuf.c

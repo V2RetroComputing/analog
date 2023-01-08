@@ -4,10 +4,6 @@
 #include "common/abus.h"
 #include "common/config.h"
 #include "common/modes.h"
-#include "vga/businterface.h"
-#include "z80/businterface.h"
-#include "serial/businterface.h"
-#include "parallel/businterface.h"
 #include "pico_hal.h"
 
 #ifdef RASPBERRYPI_PICO_W
@@ -19,6 +15,11 @@ volatile uint8_t core1_running = 0;
 static void core1_loop() {
     for(;;) {
         switch(v2mode) {
+        case MODE_DIAG:
+            core1_running = 1;
+            diag_businterface();
+            core1_running = 0;
+            break;
         case MODE_VGACARD:
             core1_running = 1;
             vga_businterface();

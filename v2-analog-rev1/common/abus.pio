@@ -41,7 +41,7 @@ write_cycle:
 read_cycle:
     ; the current time is P0+88ns (P0 + 16ns + 2 clocks (input synchronizers) + 7 instructions)
 
-    set PINS, 0b111                     ; ensure AddrLo transceiver is disabled and delay for ~DEVSEL to become valid (P0+63ns+buffer delay)
+    set PINS, 0b111  [1]                ; ensure AddrLo transceiver is disabled and delay for ~DEVSEL to become valid (P0+63ns+buffer delay)
     in PINS, 10                         ; read R/W, ~DEVSEL, and dontcare[7:0], then autopush
 
     irq set READ_DATA_TRIGGER_IRQ       ; trigger the data read state machine to put data on the data bus
@@ -80,7 +80,7 @@ wait_loop:
 
     set PINS, 0b01                      ; enable Data tranceiver with output direction
     mov OSR, ~NULL
-    out PINDIRS, 8  [31]                ; set data pins as outputs
+    out PINDIRS, 8  [30]                ; set data pins as outputs
 
     pull noblock                        ; pull value from the FIFO as late as possible
     out PINS, 8

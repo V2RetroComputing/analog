@@ -13,7 +13,9 @@ uint8_t wifi_psk[32];
 
 void parse_config(uint8_t *buffer) {
     if(!memcmp("MODE=", buffer, 5)) {
-        if(!strcmp("VGA", buffer+5)) {
+        if(!strcmp("DIAG", buffer+5)) {
+            v2mode = MODE_DIAG;
+        } else if(!strcmp("VGA", buffer+5)) {
             v2mode = MODE_VGACARD;
         } else if(!strcmp("Z80", buffer+5)) {
             v2mode = MODE_APPLICARD;
@@ -40,10 +42,16 @@ void parse_config(uint8_t *buffer) {
         } else if(!strcmp("CDC_HOST", buffer+4)) {
             usbmux = USB_HOST_CDC;
         }
+    } else if(!memcmp("WIFI=", buffer, 5)) {
+        if(!strcmp("CLIENT", buffer+5)) {
+            wifimode = WIFI_CLIENT;
+        } else if(!strcmp("AP", buffer+5)) {
+            wifimode = WIFI_AP;
+        }
     } else if(!memcmp("SSID=", buffer, 5)) {
-        // TODO: Set lwip WIFI SSID
+        strncpy(wifi_ssid, buffer+5, 25);
     } else if(!memcmp("PSK=", buffer, 4)) {
-        // TODO: Set lwip WIFI PSK
+        strncpy(wifi_psk, buffer+5, 26);
     }
 }
 
@@ -58,6 +66,10 @@ void default_config() {
 
 void write_config() {
     uint8_t config_temp[32];
+    
+    if(v2mode == MODE_DIAG) return;
+    if(v2mode == MODE_REBOOT) return;
+    
     int file = pico_open("config", LFS_O_WRONLY | LFS_O_CREAT);
     if(file < 0)
         return;
@@ -178,5 +190,7 @@ void config_handler() {
 
     if(!strcmp("WRITE_CONFIG", (uint8_t*)config_memory)) {
         write_config();
+    } else if(!strcmp("REBOOT", (uint8_t*)config_memory)) {
+        v2mode = MODE_REBOOT;
     } else parse_config((uint8_t*)config_memory);
 }

@@ -19,6 +19,7 @@
 
 typedef enum {
     MODE_REBOOT = 0,
+    MODE_DIAG,
     MODE_VGACARD,
     MODE_APPLICARD,
     MODE_SERIAL,
