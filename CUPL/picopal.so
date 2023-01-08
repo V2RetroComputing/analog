@@ -1,0 +1,51 @@
+CSIM(WM): CUPL Simulation Program
+Version 5.0a Serial# 
+Copyright (c) 1983, 1998 Logical Devices, Inc.
+CREATED Sun Jan 08 03:46:14 2023
+
+LISTING FOR SIMULATION FILE: picopal.si
+
+   1: Name     PicoPal;
+   2: PartNo   U5;
+   3: Date     27/11/22;
+   4: Revision 01;
+   5: Designer David Kuder;
+   6: Company  Grizzly Adams;
+   7: Assembly None;
+   8: Location None;
+   9: Device   g16V8;
+  10: 
+  11: 
+  12: ORDER: A0, A1, A2, BSEL0, BSEL1, BSEL2, BSEL3, !CARDSELECT, EXTDISABLE, EXTENABLE, EXTOFF, EXTSELECT, !DEVSELECT, !IOSELECT, !IOSTROBE, !RESET, clock; 
+  13: 
+  14: 
+
+==========================
+             !            
+             CE   !       
+             AXE ED!!     
+             RTX XEII     
+             DDT TVOO     
+             SIEESSSS!    
+         BBBBESNXEEETRc   
+         SSSSLAATLLLREl   
+         EEEEEBBOEEEOSo   
+      AAALLLLCLLFCCCBEc   
+      0120123TEEFTTTETk   
+==========================
+0001: 0000110HHLLL11101
+0002: 0000110HHLLL11111
+0003: 0000110LHLLL01111
+0004: 0000110HHLLL11111
+0005: 0000110HHLLL11011
+0006: 0000110HHLLL11111
+0007: 0000110LLHLL10111
+0008: 0000110LLHLH11011
+0009: 0001110HHLLL11111
+0010: 0000110HHLLL11011
+0011: 0000110LLHLL10111
+0012: 1100110LLHLH11011
+0013: 1110110HHLHL11011
+0014: 0000110HHLLL11111
+0015: 0000110HHLLL11111
+0016: 0000110HHLLL11111

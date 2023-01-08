@@ -5,7 +5,7 @@
 
 CUPL(WM)        5.0a Serial# MW-10400000
 Device          g16v8ma  Library DLIB-h-40-8
-Created         Sat Jan 07 23:18:58 2023
+Created         Sun Jan 08 03:46:05 2023
 Name            PicoPal
 Partno          U5
 Revision        01
@@ -26,7 +26,7 @@ CARDSELECT =>
 
 EXTDISABLE =>
     EXTENABLE
-  # DEVSELECT
+  # IOSELECT
 
 EXTENABLE =>
     EXTDISABLE
@@ -35,15 +35,15 @@ EXTENABLE =>
   # BSEL0 & BSEL1 & BSEL2 & !BSEL3
 
 EXTOFF =>
-    !A8 & !A9 & !A10 & IOSTROBE
+    A0 & A1 & A2 & IOSTROBE
 
 EXTSELECT =>
     EXTENABLE & IOSTROBE
 
-A8.oe  =>
+A0.oe  =>
     0 
 
-A9.oe  =>
+A1.oe  =>
     0 
 
 CARDSELECT.oe  =>
@@ -70,14 +70,15 @@ Pin Variable                                    Pterms   Max     Min
 Pol   Name              Ext     Pin     Type     Used   Pterms  Level   
 --- --------            ---     ---     ----    ------  ------  -----   
 
-    A8                          14       V        -       -       -     
-    A9                          13       V        -       -       -     
-    A10                         11       V        -       -       -     
+    A0                          14       V        -       -       -     
+    A1                          13       V        -       -       -     
+    A2                          11       V        -       -       -     
     BSEL0                       6        V        -       -       -     
     BSEL1                       5        V        -       -       -     
     BSEL2                       4        V        -       -       -     
     BSEL3                       3        V        -       -       -     
  !  CARDSELECT                  12       V        3       7       1     
+    CLOCK                       1        V        -       -       -     
  !  DEVSELECT                   7        V        -       -       -     
     EXTDISABLE                  18       V        2       7       1     
     EXTENABLE                   17       V        4       7       1     
@@ -86,9 +87,8 @@ Pol   Name              Ext     Pin     Type     Used   Pterms  Level
  !  IOSELECT                    8        V        -       -       -     
  !  IOSTROBE                    9        V        -       -       -     
  !  RESET                       2        V        -       -       -     
-    clock                       1        V        -       -       -     
-    A8                  oe      14       D        1       1       0     
-    A9                  oe      13       D        1       1       0     
+    A0                  oe      14       D        1       1       0     
+    A1                  oe      13       D        1       1       0     
     CARDSELECT          oe      12       D        1       1       0     
     EXTDISABLE          oe      18       D        1       1       0     
     EXTENABLE           oe      17       D        1       1       0     
@@ -120,7 +120,7 @@ Pin #19  02048  Pol x  02120  Ac1 -
 Pin #18  02049  Pol x  02121  Ac1 - 
  00256 -------------------------------- 
  00288 ----------x--------------------- 
- 00320 ---------------------x---------- 
+ 00320 -------------------------x------ 
  00352 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  00384 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  00416 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
@@ -146,7 +146,7 @@ Pin #16  02051  Pol -  02123  Ac1 -
  00992 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
 Pin #15  02052  Pol -  02124  Ac1 - 
  01024 -------------------------------- 
- 01056 -----------------------x---x-x-x 
+ 01056 ----------------------x---x--xx- 
  01088 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  01120 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  01152 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
@@ -191,15 +191,15 @@ LEGEND    X : fuse not blown
 
                                ______________
                               |   PicoPal    |
-                    clock x---|1           20|---x Vcc                      
+                    CLOCK x---|1           20|---x Vcc                      
                    !RESET x---|2           19|---x                          
                     BSEL3 x---|3           18|---x EXTDISABLE               
                     BSEL2 x---|4           17|---x EXTENABLE                
                     BSEL1 x---|5           16|---x EXTSELECT                
                     BSEL0 x---|6           15|---x EXTOFF                   
-               !DEVSELECT x---|7           14|---x A8                       
-                !IOSELECT x---|8           13|---x A9                       
+               !DEVSELECT x---|7           14|---x A0                       
+                !IOSELECT x---|8           13|---x A1                       
                 !IOSTROBE x---|9           12|---x !CARDSELECT              
-                      GND x---|10          11|---x A10                      
+                      GND x---|10          11|---x A2                       
                               |______________|
 
