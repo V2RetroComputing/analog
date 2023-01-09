@@ -5,7 +5,7 @@
 
 CUPL(WM)        5.0a Serial# MW-10400000
 Device          g16v8ma  Library DLIB-h-40-8
-Created         Sun Jan 08 03:46:05 2023
+Created         Sun Jan 08 15:55:21 2023
 Name            PicoPal
 Partno          U5
 Revision        01
@@ -35,7 +35,7 @@ EXTENABLE =>
   # BSEL0 & BSEL1 & BSEL2 & !BSEL3
 
 EXTOFF =>
-    A0 & A1 & A2 & IOSTROBE
+    A0 & A1 & A2 & BSEL1 & !BSEL2 & BSEL3 & IOSTROBE
 
 EXTSELECT =>
     EXTENABLE & IOSTROBE
@@ -146,7 +146,7 @@ Pin #16  02051  Pol -  02123  Ac1 -
  00992 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
 Pin #15  02052  Pol -  02124  Ac1 - 
  01024 -------------------------------- 
- 01056 ----------------------x---x--xx- 
+ 01056 ----x----x--x---------x---x--xx- 
  01088 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  01120 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  01152 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 

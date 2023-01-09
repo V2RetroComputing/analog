@@ -41,8 +41,8 @@ PIN 18          = EXTDISABLE;   /* Combinatorial                */
 
 /** Logic Equations **/
 
-/* $CFxx disables */
-EXTOFF = IOSTROBE & [A2..0]:'b'111;
+/* $CFxx disables, but only triggered during AddrLo */
+EXTOFF = IOSTROBE & [A2..0]:'b'111 & [BSEL3..0]:'b'101X;
 
 /* Implement an SR Latch */
 EXTDISABLE = !(EXTENABLE # IOSELECT);

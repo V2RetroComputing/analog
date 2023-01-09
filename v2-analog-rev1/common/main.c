@@ -50,6 +50,9 @@ static void core0_loop() {
         case MODE_REBOOT:
             flash_reboot();
             break;
+        case MODE_DIAG:
+            diagmain();
+            break;
         case MODE_VGACARD:
             vgamain();
             break;
