@@ -8,13 +8,18 @@ v2mode_t v2mode;
 usbmux_t usbmux;
 serialmux_t serialmux;
 wifimode_t wifimode;
+compat_t machine;
 uint8_t wifi_ssid[32];
 uint8_t wifi_psk[32];
+
+extern bool userfont;
 
 void parse_config(uint8_t *buffer) {
     if(!memcmp("MODE=", buffer, 5)) {
         if(!strcmp("DIAG", buffer+5)) {
             v2mode = MODE_DIAG;
+        } else if(!strcmp("FS", buffer+5)) {
+            v2mode = MODE_FS;
         } else if(!strcmp("VGA", buffer+5)) {
             v2mode = MODE_VGACARD;
         } else if(!strcmp("Z80", buffer+5)) {
@@ -25,6 +30,18 @@ void parse_config(uint8_t *buffer) {
             v2mode = MODE_PARALLEL;
         } else if(!strcmp("SNESMAX", buffer+5)) {
             v2mode = MODE_SNESMAX;
+        }
+    } else if(!memcmp("MACHINE=", buffer, 8)) {
+        if(!strcmp("II", buffer+8)) {
+            machine = APPLE_II;
+            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+        } else if(!strcmp("IIE", buffer+8)) {
+            machine = APPLE_IIE;
+            soft_switches &= ~SOFTSW_IIGS_REGS;
+            soft_switches |= SOFTSW_IIE_REGS;
+        } else if(!strcmp("IIGS", buffer+8)) {
+            machine = APPLE_IIGS;
+            soft_switches |= SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS;
         }
     } else if(!memcmp("MUX=", buffer, 4)) {
         if(!strcmp("USB", buffer+4)) {
@@ -62,6 +79,8 @@ void default_config() {
     wifimode = WIFI_AP;
     strcpy(wifi_ssid, "V2RetroNet");
     strcpy(wifi_psk, "Analog");
+    machine = COMPAT_AUTO;
+    soft_switches = 0;
 }
 
 void write_config() {
@@ -75,6 +94,11 @@ void write_config() {
         return;
     
     switch(v2mode) {
+    case MODE_FS:
+        memset(config_temp, 0, sizeof(config_temp));
+        strcpy(config_temp, "MODE=FS");
+        pico_write(file, config_temp, 32);
+        break;
     case MODE_VGACARD:
         memset(config_temp, 0, sizeof(config_temp));
         strcpy(config_temp, "MODE=VGA");
@@ -103,6 +127,23 @@ void write_config() {
     case MODE_ETHERNET:
         memset(config_temp, 0, sizeof(config_temp));
         strcpy(config_temp, "MODE=ETHERNET");
+        pico_write(file, config_temp, 32);
+        break;
+    }
+    switch(machine) {
+    case APPLE_II:
+        memset(config_temp, 0, sizeof(config_temp));
+        strcpy(config_temp, "MACHINE=II");
+        pico_write(file, config_temp, 32);
+        break;
+    case APPLE_IIE:
+        memset(config_temp, 0, sizeof(config_temp));
+        strcpy(config_temp, "MACHINE=IIE");
+        pico_write(file, config_temp, 32);
+        break;
+    case APPLE_IIGS:
+        memset(config_temp, 0, sizeof(config_temp));
+        strcpy(config_temp, "MACHINE=IIGS");
         pico_write(file, config_temp, 32);
         break;
     }
@@ -185,10 +226,19 @@ void read_config() {
     pico_close(file);
 }
 
+volatile uint8_t *videx_page_tmp = (private_memory+0xF000);
+extern uint8_t character_rom[4096];
+
 void config_handler() {
     if(config_memory[31] != 0) return;
 
-    if(!strcmp("WRITE_CONFIG", (uint8_t*)config_memory)) {
+    if(!strcmp("BANK=SAVE", (uint8_t*)config_memory)) {
+        videx_page_tmp = videx_page;
+    } else if(!strcmp("BANK=RESTORE", (uint8_t*)config_memory)) {
+        videx_page = videx_page_tmp;
+    } else if(!memcmp("BANK=FONT", (uint8_t*)config_memory, 9)) {
+        videx_page = character_rom + (((config_memory[9] - '0') & 3) * 1024);
+    } else if(!strcmp("WRITE_CONFIG", (uint8_t*)config_memory)) {
         write_config();
     } else if(!strcmp("REBOOT", (uint8_t*)config_memory)) {
         v2mode = MODE_REBOOT;

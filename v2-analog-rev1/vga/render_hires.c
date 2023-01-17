@@ -6,8 +6,7 @@
 #include "vgaout.h"
 
 
-static void render_hires_line(uint line);
-
+static void render_hires_line(bool p2, uint line);
 
 static uint hires_line_to_mem_offset(uint line) {
     return ((line & 0x07) << 10) | ((line & 0x38) << 4) | (((line & 0xc0) >> 6) * 40);
@@ -19,8 +18,10 @@ void __time_critical_func(render_hires)() {
 
     render_border();
 
+    bool p2 = !(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2);
+
     for(uint line=0; line < 192; line++) {
-        render_hires_line(line);
+        render_hires_line(p2, line);
     }
 
     render_border();
@@ -32,17 +33,19 @@ void __time_critical_func(render_mixed_hires)() {
 
     render_border();
 
+    bool p2 = !(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2);
+
     for(uint line=0; line < 160; line++) {
-        render_hires_line(line);
+        render_hires_line(p2, line);
     }
 
-    if(terminal_switches & TERMINAL_80COL) {
+    if(soft_switches & SOFTSW_80COL) {
         for(uint line=20; line < 24; line++) {
-            render_terminal_line(line);
+            render_text80_line(p2, line);
         }
     } else {
         for(uint line=20; line < 24; line++) {
-            render_text_line(line);
+            render_text40_line(p2, line);
         }
     }
 
@@ -50,18 +53,16 @@ void __time_critical_func(render_mixed_hires)() {
 }
 
 
-static void __time_critical_func(render_hires_line)(uint line) {
+static void __time_critical_func(render_hires_line)(bool p2, uint line) {
     struct vga_scanline *sl = vga_prepare_scanline();
     uint sl_pos = 0;
 
-    const uint8_t *page = (const uint8_t *)((soft_switches & SOFTSW_PAGE_2) ? hgr_p2 : hgr_p1);
-    const uint8_t *line_mem = page + hires_line_to_mem_offset(line);
+    const uint8_t *line_mem = (const uint8_t *)((p2 ? hgr_p2 : hgr_p1) + hires_line_to_mem_offset(line));
 
     // Pad 40 pixels on the left to center horizontally
-    while(sl_pos < 40/8) {
-        sl->data[sl_pos] = (text_border|THEN_EXTEND_3) | ((text_border|THEN_EXTEND_3) << 16); // 8 pixels per word
-        sl_pos++;
-    }
+    sl->data[sl_pos++] = (text_border|THEN_EXTEND_7) | ((text_border|THEN_EXTEND_7) << 16); // 16 pixels per word
+    sl->data[sl_pos++] = (text_border|THEN_EXTEND_7) | ((text_border|THEN_EXTEND_7) << 16); // 16 pixels per word
+    sl->data[sl_pos++] = (text_border|THEN_EXTEND_3) | ((text_border|THEN_EXTEND_3) << 16); // 8 pixels per word
 
     // Each hires byte contains 7 pixels which may be shifted right 1/2 a pixel. That is
     // represented here by 14 'dots' to precisely describe the half-pixel positioning.
@@ -83,7 +84,7 @@ static void __time_critical_func(render_hires_line)(uint line) {
     //                          pixel
     uint32_t dots = 0;
     uint oddness = 0;
-    uint i;
+    uint i, j;
 
     // Load in the first 14 dots
     dots |= (uint32_t)hires_dot_patterns[line_mem[0]] << 15;
@@ -97,20 +98,33 @@ static void __time_critical_func(render_hires_line)(uint line) {
         }
         dots |= (uint32_t)hires_dot_patterns[b] << 1;
 
-        // Consume 14 dots
-        for(uint j=0; j < 7; j++) {
-            uint dot_pattern = oddness | ((dots >> 24) & 0xff);
-            sl->data[sl_pos] = hires_color_patterns[dot_pattern];
-            sl_pos++;
-            dots <<= 2;
-            oddness ^= 0x100;
+        if(soft_switches & SOFTSW_MONOCHROME) {
+            // Consume 14 dots
+            for(j = 0; j < 14; j++) {
+                uint32_t pixeldata = (dots & 0x2000) ? (0x1ff|THEN_EXTEND_1) : (0x000|THEN_EXTEND_1);
+                pixeldata |= (dots & 0x1000) ?
+                    ((uint32_t)0x1ff|THEN_EXTEND_1) << 16 :
+                    ((uint32_t)0x000|THEN_EXTEND_1) << 16;
+                dots <<= 2;
+                sl->data[sl_pos] = pixeldata;
+                sl_pos++;
+            }
+        } else {
+            // Consume 14 dots
+            for(uint j=0; j < 7; j++) {
+                uint dot_pattern = oddness | ((dots >> 24) & 0xff);
+                sl->data[sl_pos] = hires_color_patterns[dot_pattern];
+                sl_pos++;
+                dots <<= 2;
+                oddness ^= 0x100;
+            }
         }
     }
 
-    for(i=0; i < 40/8; i++) {
-        sl->data[sl_pos] = (text_border|THEN_EXTEND_3) | ((text_border|THEN_EXTEND_3) << 16); // 8 pixels per word
-        sl_pos++;
-    }
+    // Pad 40 pixels on the right to center horizontally
+    sl->data[sl_pos++] = (text_border|THEN_EXTEND_7) | ((text_border|THEN_EXTEND_7) << 16); // 16 pixels per word
+    sl->data[sl_pos++] = (text_border|THEN_EXTEND_7) | ((text_border|THEN_EXTEND_7) << 16); // 16 pixels per word
+    sl->data[sl_pos++] = (text_border|THEN_EXTEND_3) | ((text_border|THEN_EXTEND_3) << 16); // 8 pixels per word
 
     sl->length = sl_pos;
     sl->repeat_count = 1;

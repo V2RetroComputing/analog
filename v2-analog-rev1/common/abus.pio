@@ -33,9 +33,9 @@ next_bus_cycle:
 write_cycle:
     ; the current time is P0+88ns (P0 + 16ns + 2 clocks (input synchronizers) + 7 instructions)
 
-    set PINS, 0b110  [15]               ; enable Data tranceiver & wait until both ~DEVSEL and the written data are valid (P0+200ns)
+    set PINS, 0b110  [14]               ; enable Data tranceiver & wait until both ~DEVSEL and the written data are valid (P0+200ns)
     in PINS, 10                         ; read R/W, ~DEVSEL, and Data[7:0], then autopush
-    wait 0 GPIO, PHI0_GPIO  [7]         ; wait for PHI0 to fall
+    wait 0 GPIO, PHI0_GPIO  [6]         ; wait for PHI0 to fall
     jmp next_bus_cycle
 
 read_cycle:
@@ -45,7 +45,7 @@ read_cycle:
     in PINS, 10                         ; read R/W, ~DEVSEL, and dontcare[7:0], then autopush
 
     irq set READ_DATA_TRIGGER_IRQ       ; trigger the data read state machine to put data on the data bus
-    wait 0 GPIO, PHI0_GPIO   [7]        ; wait for PHI0 to fall
+    wait 0 GPIO, PHI0_GPIO   [6]        ; wait for PHI0 to fall
     wait 0 irq DATA_BUSY_IRQ            ; wait for the data handling state machine to complete to avoid contention w/transceiver control
 .wrap
 

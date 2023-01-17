@@ -20,6 +20,11 @@ static void core1_loop() {
             diag_businterface();
             core1_running = 0;
             break;
+        case MODE_FS:
+            core1_running = 1;
+            fs_businterface();
+            core1_running = 0;
+            break;
         case MODE_VGACARD:
             core1_running = 1;
             vga_businterface();
@@ -53,6 +58,9 @@ static void core0_loop() {
         case MODE_DIAG:
             diagmain();
             break;
+        case MODE_FS:
+            fsmain();
+            break;
         case MODE_VGACARD:
             vgamain();
             break;
@@ -84,14 +92,14 @@ int main() {
     // Sensible defaults if there is no config / fs
     default_config();
 
+    multicore_launch_core1(core1_loop);
+
     // Try mounting the LittleFS, or format if it isn't there.
     if(pico_mount(0) == LFS_ERR_OK) {
         read_config();
     } else if(pico_mount(1) == LFS_ERR_OK) {
         read_config();
     }
-
-    multicore_launch_core1(core1_loop);
 
     core0_loop();
 

@@ -17,10 +17,11 @@ extern void render_about_init();
 
 extern void update_text_flasher();
 extern void render_text();
-extern void render_text_line(unsigned int line);
+extern void render_text40_line(bool p2, unsigned int line);
+extern void render_text80_line(bool p2, unsigned int line);
 
-extern void render_terminal();
-extern void render_terminal_line(unsigned int line);
+extern void render_videx();
+extern void render_videx_line(unsigned int line);
 
 extern void render_border();
 
@@ -35,6 +36,8 @@ extern void render_mixed_dhgr();
 
 extern void render_dgr();
 extern void render_mixed_dgr();
+
+extern void render_shr();
 
 extern uint_fast32_t text_flasher_mask;
 

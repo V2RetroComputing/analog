@@ -29,6 +29,8 @@ target_sources(v2-analog-${PICO_BOARD} PUBLIC
     common/main.c
     diag/businterface.c
     diag/diag.c
+    fs/businterface.c
+    fs/fs.c
     vga/vgamain.c
     vga/businterface.c
     vga/vgabuf.c
@@ -36,9 +38,10 @@ target_sources(v2-analog-${PICO_BOARD} PUBLIC
     vga/render_hires.c
     vga/render_lores.c
     vga/render_text.c
-    vga/render_terminal.c
+    vga/render_videx.c
     vga/render_dhgr.c
     vga/render_dgr.c
+    vga/render_shr.c
     vga/render_test.c
     vga/terminal_rom.c
     vga/character_rom.c
@@ -61,10 +64,15 @@ target_link_libraries(v2-analog-${PICO_BOARD} PUBLIC
     pico_multicore
     pico_stdlib
     littlefs-lib
-    pico_cyw43_arch_lwip_poll
     hardware_dma
     hardware_pio
 )
+
+if(${PICO_BOARD} MATCHES "pico_w")
+target_link_libraries(v2-analog-${PICO_BOARD} PUBLIC
+    pico_cyw43_arch_lwip_poll
+)
+endif(${PICO_BOARD} MATCHES "pico_w")
 
 pico_enable_stdio_usb(v2-analog-${PICO_BOARD} 0)
 pico_enable_stdio_uart(v2-analog-${PICO_BOARD} 0)

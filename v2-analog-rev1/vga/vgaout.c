@@ -20,7 +20,7 @@
 #define HSYNC_TIMING_VALUE (((PIXELS_PER_LINE) / 8) - 23)
 #define VSYNC_TIMING_VALUE ((LINES_PER_FRAME) - 4)
 
-#define NUM_SCANLINE_BUFFERS 8
+#define NUM_SCANLINE_BUFFERS 32
 
 enum {
     VGA_HSYNC_SM = 0,
@@ -151,7 +151,7 @@ static void vga_dma_irq_handler() {
     active_scanline->_flags &= ~(uint_fast8_t)FLAG_BUSY;
 
     const uint32_t irq_status = spin_lock_blocking(lock);
-    scanline_queue_tail = (scanline_queue_tail + 1) % NUM_SCANLINE_BUFFERS;
+    scanline_queue_tail = (scanline_queue_tail + 1) & (NUM_SCANLINE_BUFFERS-1);
     trigger_ready_scanline_dma();
     spin_unlock(lock, irq_status);
 }
@@ -244,7 +244,7 @@ struct vga_scanline *vga_prepare_scanline() {
     scanline->_flags = FLAG_BUSY;
     scanline->_sync = (uint32_t)THEN_WAIT_HSYNC << 16;
 
-    scanline_queue_head = (scanline_queue_head + 1) % NUM_SCANLINE_BUFFERS;
+    scanline_queue_head = (scanline_queue_head + 1) & (NUM_SCANLINE_BUFFERS-1);
 
     return scanline;
 }

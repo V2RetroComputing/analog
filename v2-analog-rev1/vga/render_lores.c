@@ -31,7 +31,7 @@ uint16_t lores_palette[16] = {
 #undef _RGB333
 
 
-static void render_lores_line(uint line);
+static void render_lores_line(bool p2, uint line);
 
 
 void __time_critical_func(render_lores)() {
@@ -39,8 +39,10 @@ void __time_critical_func(render_lores)() {
 
     render_border();
 
+    bool p2 = !(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2);
+
     for(uint line=0; line < 24; line++) {
-        render_lores_line(line);
+        render_lores_line(p2, line);
     }
 
     render_border();
@@ -52,17 +54,19 @@ void __time_critical_func(render_mixed_lores)() {
 
     render_border();
 
+    bool p2 = !(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2);
+
     for(uint line=0; line < 20; line++) {
-        render_lores_line(line);
+        render_lores_line(p2, line);
     }
 
-    if(terminal_switches & TERMINAL_80COL) {
+    if(soft_switches & SOFTSW_80COL) {
         for(uint line=20; line < 24; line++) {
-            render_terminal_line(line);
+            render_text80_line(p2, line);
         }
     } else {
         for(uint line=20; line < 24; line++) {
-            render_text_line(line);
+            render_text40_line(p2, line);
         }
     }
 
@@ -70,18 +74,17 @@ void __time_critical_func(render_mixed_lores)() {
 }
 
 
-static void __time_critical_func(render_lores_line)(uint line) {
+static void __time_critical_func(render_lores_line)(bool p2, uint line) {
     // Construct two scanlines for the two different colored cells at the same time
     struct vga_scanline *sl1 = vga_prepare_scanline();
     struct vga_scanline *sl2 = vga_prepare_scanline();
     uint sl_pos = 0;
     uint i;
 
-    const uint8_t *page = (const uint8_t *)((soft_switches & SOFTSW_PAGE_2) ? text_p2 : text_p1);
-    const uint8_t *line_buf = page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40);
+    const uint8_t *line_buf = (const uint8_t *)((p2 ? text_p2 : text_p1) + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
 
     // Pad 40 pixels on the left to center horizontally
-    while(sl_pos < 40/8) {
+    for(i = 0; i < 40/8; i++) {
         sl1->data[sl_pos] = (text_border|THEN_EXTEND_3) | ((text_border|THEN_EXTEND_3) << 16); // 8 pixels per word
         sl2->data[sl_pos] = (text_border|THEN_EXTEND_3) | ((text_border|THEN_EXTEND_3) << 16); // 8 pixels per word
         sl_pos++;
@@ -94,8 +97,12 @@ static void __time_critical_func(render_lores_line)(uint line) {
         uint32_t color4 = lores_palette[(line_buf[i+1] >> 4) & 0xf];
 
         // Each lores pixel is 7 hires pixels, or 14 VGA pixels wide
-        sl1->data[sl_pos] = (color1|THEN_EXTEND_6) | ((color3|THEN_EXTEND_6) << 16);
-        sl2->data[sl_pos] = (color2|THEN_EXTEND_6) | ((color4|THEN_EXTEND_6) << 16);
+        sl1->data[sl_pos] = (color1|THEN_EXTEND_6) | ((color1|THEN_EXTEND_6) << 16);
+        sl2->data[sl_pos] = (color2|THEN_EXTEND_6) | ((color2|THEN_EXTEND_6) << 16);
+        sl_pos++;
+
+        sl1->data[sl_pos] = (color3|THEN_EXTEND_6) | ((color3|THEN_EXTEND_6) << 16);
+        sl2->data[sl_pos] = (color4|THEN_EXTEND_6) | ((color4|THEN_EXTEND_6) << 16);
         sl_pos++;
     }
 

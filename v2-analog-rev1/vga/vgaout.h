@@ -28,7 +28,7 @@ struct vga_scanline {
     volatile uint_fast8_t _flags;
 
     uint32_t _sync;
-    uint32_t data[(VGA_WIDTH)+1];
+    uint32_t data[(VGA_WIDTH/2)+8];
 };
 
 

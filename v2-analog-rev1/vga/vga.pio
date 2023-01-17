@@ -36,7 +36,7 @@ pixel_out:
 public wait_vsync:
     wait 0 irq VSYNC_IRQ_NUM
 public wait_hsync:
-    wait 0 irq HSYNC_IRQ_NUM  [9]
+    wait 0 irq HSYNC_IRQ_NUM  [1]
 public extend_7:
     nop  [1]
 public extend_6:

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 
 extern volatile uint8_t config_memory[32];
@@ -48,3 +50,47 @@ extern volatile uint8_t *slot7rom;
 
 /* Videx VideoTerm */
 extern volatile uint8_t *videx_page;
+
+extern volatile uint32_t soft_switches;
+
+#define SOFTSW_TEXT_MODE      0x00000001
+#define SOFTSW_MIX_MODE       0x00000002
+#define SOFTSW_HIRES_MODE     0x00000004
+#define SOFTSW_MODE_MASK      0x00000007
+#define SOFTSW_PAGE_2         0x00000008
+
+// Apple IIe/c/gs softswitches
+#define SOFTSW_80STORE        0x00000100
+#define SOFTSW_AUX_READ       0x00000200
+#define SOFTSW_AUX_WRITE      0x00000400
+#define SOFTSW_AUXZP          0x00000800
+#define SOFTSW_SLOT3ROM       0x00001000
+#define SOFTSW_80COL          0x00002000
+#define SOFTSW_ALTCHAR        0x00004000
+#define SOFTSW_DGR            0x00008000
+
+#define SOFTSW_NEWVID_MASK    0xE0
+#define SOFTSW_NEWVID_SHIFT   11
+
+#define SOFTSW_MONOCHROME     0x00010000
+#define SOFTSW_LINEARIZE      0x00020000
+#define SOFTSW_SHR            0x00040000
+
+#define SOFTSW_IOUDIS         0x00080000
+
+#define SOFTSW_SHADOW_MASK    0x7F
+#define SOFTSW_SHADOW_SHIFT   20
+
+#define SOFTSW_SHADOW_TEXT    0x00100000
+#define SOFTSW_SHADOW_HGR1    0x00200000
+#define SOFTSW_SHADOW_HGR2    0x00400000
+#define SOFTSW_SHADOW_SHR     0x00800000
+#define SOFTSW_SHADOW_AUXHGR  0x01000000
+#define SOFTSW_SHADOW_ALTDISP 0x02000000
+#define SOFTSW_SHADOW_IO      0x04000000
+
+// V2 Analog specific softswitches
+#define SOFTSW_VIDEX          0x10000000
+#define SOFTSW_TEST           0x20000000
+#define SOFTSW_IIE_REGS       0x40000000
+#define SOFTSW_IIGS_REGS      0x80000000

@@ -20,6 +20,7 @@
 typedef enum {
     MODE_REBOOT = 0,
     MODE_DIAG,
+    MODE_FS,
     MODE_VGACARD,
     MODE_APPLICARD,
     MODE_SERIAL,
@@ -53,6 +54,15 @@ typedef enum {
 } wifimode_t;
 
 extern wifimode_t wifimode;
+
+typedef enum {
+    APPLE_II = 0,
+    APPLE_IIE = 1,
+    APPLE_IIGS = 2,
+    COMPAT_AUTO = 0xff
+} compat_t;
+
+extern compat_t machine;
 
 enum {
     ABUS_MAIN_SM = 0,

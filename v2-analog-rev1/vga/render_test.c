@@ -1,11 +1,14 @@
 #include <string.h>
 #include <pico/stdlib.h>
-#include <pico/unique_id.h>
 #include <hardware/timer.h>
 #include "vga/vgabuf.h"
 #include "vga/render.h"
 #include "vga/vgaout.h"
 #include "vga/logo.h"
+
+#ifdef RASPBERRYPI_PICO_W
+#include <pico/unique_id.h>
+#endif
 
 #define _PIXPAIR(p1, p2) ((uint32_t)(p1) | (((uint32_t)p2) << 16))
 
@@ -14,7 +17,7 @@ char error_message[16*24+1];
 void render_test_init() {
     memset(error_message, ' ', 16*24);
     memcpy(error_message +   0, "HW: ANALOG-REV-1", 16);
-    memcpy(error_message +  16, "FW: 23-01-06-000", 16);
+    memcpy(error_message +  16, "FW: 23-01-16-119", 16);
 
     memcpy(error_message +  64, "  COPYRIGHT (C) ", 16);
     memcpy(error_message +  80, "   DAVID KUDER  ", 16);
@@ -31,10 +34,14 @@ void render_test_init() {
     memcpy(error_message + 288, "CHECK FOR PROPER", 16);
     memcpy(error_message + 304, " CARD INSERTION ", 16);
 
+#ifdef RASPBERRYPI_PICO_W
     memcpy(error_message + 352, " SERIAL NUMBER: ", 16);
 
     // Get Pico's Flash Serial Number (Board ID) and terminating null.
     pico_get_unique_board_id_string(error_message + 368, 17);
+#else
+    memcpy(error_message + 368, "  V2-ANALOG-LC  ", 16);
+#endif
 }
 
 // Clear the error message, in case the user sets 0x20 in terminal switches
@@ -100,8 +107,8 @@ void __noinline __time_critical_func(render_testpattern)() {
                 uint32_t bits_b = char_text_bits(error_message[(w & 0x1f0) | (i+1)], (w/2) & 0x7);
                 uint32_t bits = (bits_a << 7) | bits_b;
                 for(uint j=0; j < 7; j++) {
-                    uint32_t pixeldata = (bits & 0x2000) ? (0x1ff|THEN_EXTEND_1) : (0 | THEN_EXTEND_1);
-                    pixeldata |= (bits & 0x1000) ? ((0x1ff|THEN_EXTEND_1) << 16) : ((0 | THEN_EXTEND_1) << 16);
+                    uint32_t pixeldata = (bits & 0x2000) ? (0|THEN_EXTEND_1) : (0x1ff | THEN_EXTEND_1);
+                    pixeldata |= (bits & 0x1000) ? ((0|THEN_EXTEND_1) << 16) : ((0x1ff | THEN_EXTEND_1) << 16);
                     bits <<= 2;
                     sl->data[sl_pos++] = pixeldata;
                 }
@@ -162,8 +169,8 @@ void __noinline __time_critical_func(render_testpattern)() {
                 uint32_t bits_b = char_text_bits(error_message[(w & 0x1f0) | (i+1)], (w/2) & 0x7);
                 uint32_t bits = (bits_a << 7) | bits_b;
                 for(uint j=0; j < 7; j++) {
-                    uint32_t pixeldata = (bits & 0x2000) ? (0x1ff|THEN_EXTEND_1) : (0 | THEN_EXTEND_1);
-                    pixeldata |= (bits & 0x1000) ? ((0x1ff|THEN_EXTEND_1) << 16) : ((0 | THEN_EXTEND_1) << 16);
+                    uint32_t pixeldata = (bits & 0x2000) ? (0|THEN_EXTEND_1) : (0x1ff | THEN_EXTEND_1);
+                    pixeldata |= (bits & 0x1000) ? ((0|THEN_EXTEND_1) << 16) : ((0x1ff | THEN_EXTEND_1) << 16);
                     bits <<= 2;
                     sl->data[sl_pos++] = pixeldata;
                 }
@@ -203,8 +210,8 @@ void __noinline __time_critical_func(render_testpattern)() {
                 uint32_t bits_b = char_text_bits(error_message[(w & 0x1f0) | (i+1)], (w/2) & 0x7);
                 uint32_t bits = (bits_a << 7) | bits_b;
                 for(uint j=0; j < 7; j++) {
-                    uint32_t pixeldata = (bits & 0x2000) ? (0x1ff|THEN_EXTEND_1) : (0 | THEN_EXTEND_1);
-                    pixeldata |= (bits & 0x1000) ? ((0x1ff|THEN_EXTEND_1) << 16) : ((0 | THEN_EXTEND_1) << 16);
+                    uint32_t pixeldata = (bits & 0x2000) ? (0|THEN_EXTEND_1) : (0x1ff | THEN_EXTEND_1);
+                    pixeldata |= (bits & 0x1000) ? ((0|THEN_EXTEND_1) << 16) : ((0x1ff | THEN_EXTEND_1) << 16);
                     bits <<= 2;
                     sl->data[sl_pos++] = pixeldata;
                 }

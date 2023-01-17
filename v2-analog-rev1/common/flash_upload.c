@@ -1,10 +1,13 @@
 #include <pico/stdlib.h>
-#include <pico/cyw43_arch.h>
 #include <pico/multicore.h>
 #include <hardware/flash.h>
 #include <hardware/watchdog.h>
 #include <hardware/resets.h>
 #include "config.h"
+
+#ifdef RASPBERRYPI_PICO_W
+#include <pico/cyw43_arch.h>
+#endif
 
 void flash_reboot() __attribute__ ((noreturn));
 

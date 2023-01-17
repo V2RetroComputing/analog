@@ -14,4 +14,7 @@ void parallel_businterface();
 void diag_businterface();
 void diagmain();
 
+void fs_businterface();
+void fsmain();
+
 void flash_reboot() __attribute__ ((noreturn));

@@ -5,7 +5,7 @@
 volatile uint32_t soft_switches = 0;
 
 // The currently programmed character generator ROM for text mode
-uint8_t character_rom[2048];
+uint8_t character_rom[4096];
 
 volatile uint8_t videx_crtc_reg;
 
