@@ -14,6 +14,7 @@ extern void render_loop();
 extern void render_testpattern();
 extern void render_test_init();
 extern void render_about_init();
+extern void render_test_sleep();
 
 extern void update_text_flasher();
 extern void render_text();
@@ -43,3 +44,5 @@ extern uint_fast32_t text_flasher_mask;
 
 extern void flash_dowork();
 
+extern void vga_init();
+extern void vga_deinit();

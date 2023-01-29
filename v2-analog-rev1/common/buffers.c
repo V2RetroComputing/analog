@@ -1,5 +1,8 @@
 #include "buffers.h"
 
+volatile uint8_t cardslot = 0;
+volatile uint32_t busactive = 0;
+
 volatile uint8_t apple_memory[64*1024];
 volatile uint8_t private_memory[64*1024];
 

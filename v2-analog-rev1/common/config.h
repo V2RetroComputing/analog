@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 #define CONFIG_SYSCLOCK 126.0 /* MHz */
 
 // Pin configuration
@@ -19,6 +21,7 @@
 
 typedef enum {
     MODE_REBOOT = 0,
+    MODE_UNKNOWN,
     MODE_DIAG,
     MODE_FS,
     MODE_VGACARD,
@@ -29,7 +32,8 @@ typedef enum {
     MODE_ETHERNET
 } v2mode_t;
 
-extern v2mode_t v2mode;
+extern volatile v2mode_t cfg_mode;
+extern volatile v2mode_t current_mode;
 
 typedef enum {
     SERIAL_LOOP = 0,
@@ -38,7 +42,7 @@ typedef enum {
     SERIAL_PRINTER,
 } serialmux_t;
 
-extern serialmux_t serialmux;
+extern volatile serialmux_t serialmux;
 
 typedef enum {
     USB_HOST_CDC,
@@ -46,23 +50,24 @@ typedef enum {
     USB_GUEST_MIDI,
 } usbmux_t;
 
-extern usbmux_t usbmux;
+extern volatile usbmux_t usbmux;
 
 typedef enum {
     WIFI_CLIENT = 0,
     WIFI_AP,
 } wifimode_t;
 
-extern wifimode_t wifimode;
+extern volatile wifimode_t wifimode;
 
 typedef enum {
-    APPLE_II = 0,
-    APPLE_IIE = 1,
-    APPLE_IIGS = 2,
-    COMPAT_AUTO = 0xff
+    MACHINE_II = 0,
+    MACHINE_IIE = 1,
+    MACHINE_IIGS = 2,
+    MACHINE_AUTO = 0xff
 } compat_t;
 
-extern compat_t machine;
+extern volatile compat_t cfg_machine;
+extern volatile compat_t current_machine;
 
 enum {
     ABUS_MAIN_SM = 0,
@@ -74,7 +79,9 @@ enum {
 #define CARD_IOSEL    (((address & 0xcf00) >= 0xc100) && ((address & 0xcf00) < 0xc700))
 #define CARD_IOSTROBE ((address & 0xc800) == 0xc800)
 
+int make_config(uint8_t *buf, uint16_t len);
 void read_config();
 void write_config();
 void config_handler();
 void default_config();
+

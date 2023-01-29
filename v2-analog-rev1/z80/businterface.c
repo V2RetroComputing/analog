@@ -1,10 +1,12 @@
 #include <string.h>
 #include <hardware/pio.h>
 #include "common/config.h"
+#include "common/buffers.h"
 #include "abus.pio.h"
 #include "z80/businterface.h"
 #include "z80/z80buf.h"
 
+volatile uint8_t *pcpi_reg = apple_memory + 0xC0C0;
 
 static inline void __time_critical_func(pcpi_read)(uint32_t address) {
     switch(address & 0x7) {
@@ -43,8 +45,8 @@ static inline void __time_critical_func(pcpi_write)(uint32_t address, uint32_t v
     }
 }
 
-
-static inline void __time_critical_func(shadow_memory)(uint32_t address, uint32_t value) {
+void __time_critical_func(z80_businterface)(uint32_t address, uint32_t value) {
+    pcpi_reg = apple_memory + (0xC080 | (cardslot << 4));
     // Shadow parts of the Apple's memory by observing the bus write cycles
     if(CARD_SELECT) {
         if(CARD_DEVSEL) {
@@ -54,33 +56,6 @@ static inline void __time_critical_func(shadow_memory)(uint32_t address, uint32_
                 pcpi_read(address);
             }
         }
-        // Config memory in card slot-rom address space
-        if(CARD_IOSEL) {
-            if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0) {
-                config_memory[address & 0x1F] = value;
-                if((address & 0xFF) == 0xFF)
-                    config_handler();
-            }
-        }
     }
 }
 
-
-void __time_critical_func(z80_businterface)() {
-    while(v2mode == MODE_APPLICARD) {
-        uint32_t value = pio_sm_get_blocking(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
-        uint32_t dout;
-        uint32_t address = (value >> 10) & 0xffff;
-
-        if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) != 0) {
-            if(CARD_SELECT) {
-                dout = pcpi_reg[address & 0x7];
-
-                // device read access
-                pio_sm_put_blocking(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM, dout);
-            }
-        }
-
-        shadow_memory(address, value);
-    }
-}

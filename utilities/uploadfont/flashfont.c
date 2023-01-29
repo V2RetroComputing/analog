@@ -13,14 +13,17 @@ uint8_t *cfgbuf;
 uint8_t *fsbuf;
 uint8_t *font = (uint8_t *)0x2000;
 
+#define CARD_TIMEOUT 0xfff
+uint16_t timeout = CARD_TIMEOUT;
+
 void paint_backdrop(char *str) {
     int w, i;
-
+    
     w = strlen(str);
     if(w > 20) {
         w = 20;
     }
-
+    
     clrscr();
     gotoy(0); gotox(1);
     cputs("V2 Analog");
@@ -48,7 +51,7 @@ void paint_backdrop(char *str) {
 
 void message(char *str) {
     int w, x, i, c;
-
+    
     if(strlen(str) > 34) {
         w = 34;
     } else {
@@ -125,7 +128,7 @@ void message(char *str) {
 
 int confirm(char *str) {
     int w, x, i, c;
-
+    
     if(strlen(str) > 34) {
         w = 34;
     } else {
@@ -188,7 +191,7 @@ int confirm(char *str) {
     }
     cputs("-+ ");
 
-
+    
     for(;;) {
         switch(cgetc()) {
         case 0x0A:
@@ -244,10 +247,167 @@ int prompt_slot(void) {
     }
 }
 
+int file_open(char *path, uint8_t flags) {
+    timeout = CARD_TIMEOUT;
+
+    strcpy((char *)fsbuf, path);
+    FS_FLAGS = flags;
+    FS_COMMAND = FS_OPEN;
+    FS_BUSY = 0xFF;
+    FS_EXECUTE = 0x00;
+
+    while(FS_BUSY && (timeout > 0)) {
+        timeout--;
+    }
+
+    if(FS_BUSY) {
+        message("I/O Error");
+        return FS_ERR_IO;
+    }
+
+    if(FS_STATUS != FS_ERR_OK) {
+        return FS_STATUS;
+    }
+
+    return FS_FILE;
+}
+
+int file_close(int file) {
+    timeout = CARD_TIMEOUT;
+
+    FS_FILE = file;
+    FS_COMMAND = FS_CLOSE;
+    FS_BUSY = 0xFF;
+    FS_EXECUTE = 0x00;
+
+    while(FS_BUSY && (timeout > 0)) {
+        timeout--;
+    }
+
+    if(FS_BUSY) {
+        message("I/O Error");
+        return FS_ERR_IO;
+    }
+
+    return FS_STATUS;
+}
+
+int file_read(int file, char *buffer, uint16_t size) {
+    timeout = CARD_TIMEOUT;
+
+    FS_FILE = file;
+    FS_COMMAND = FS_READ;
+    FS_SIZELSB = size & 0xFF;
+    FS_SIZEMSB = size >> 8;
+    FS_BUSY = 0xFF;
+    FS_EXECUTE = 0x00;
+
+    while(FS_BUSY && (timeout > 0)) {
+        timeout--;
+    }
+
+    if(FS_BUSY) {
+        message("I/O Error");
+        return FS_ERR_IO;
+    }
+
+    if(FS_STATUS != FS_ERR_OK) {
+        return FS_STATUS;
+    }
+
+    size = (((uint16_t)FS_SIZEMSB) << 8) | (uint16_t)FS_SIZELSB;
+
+    memcpy(buffer, fsbuf, size);
+
+    return size;
+}
+
+int file_write(int file, char *buffer, uint16_t size) {
+    timeout = CARD_TIMEOUT;
+
+    memcpy(fsbuf, buffer, size);
+    FS_FILE = file;
+    FS_COMMAND = FS_WRITE;
+    FS_SIZELSB = size & 0xFF;
+    FS_SIZEMSB = size >> 8;
+    FS_BUSY = 0xFF;
+    FS_EXECUTE = 0x00;
+
+    while(FS_BUSY && (timeout > 0)) {
+        timeout--;
+    }
+
+    if(FS_BUSY) {
+        message("I/O Error");
+        return FS_ERR_IO;
+    }
+
+    if(FS_STATUS != FS_ERR_OK) {
+        return FS_STATUS;
+    }
+
+    size = (((uint16_t)FS_SIZEMSB) << 8) | (uint16_t)FS_SIZELSB;
+    return size;
+}
+
+int file_seek(int file, int16_t off, uint8_t whence) {
+    timeout = CARD_TIMEOUT;
+
+    FS_FILE = file;
+    FS_COMMAND = FS_SEEK;
+    FS_OFFLSB = ((uint16_t)off) & 0xFF;
+    FS_OFFMSB = ((uint16_t)off) >> 8;
+    FS_WHENCE = whence;
+    FS_BUSY = 0xFF;
+    FS_EXECUTE = 0x00;
+
+    while(FS_BUSY && (timeout > 0)) {
+        timeout--;
+    }
+
+    if(FS_BUSY) {
+        message("I/O Error");
+        return FS_ERR_IO;
+    }
+
+    if(FS_STATUS != FS_ERR_OK) {
+        return FS_STATUS;
+    }
+
+    off = (int16_t)(((uint16_t)FS_SIZEMSB) << 8) | (uint16_t)FS_SIZELSB;
+    return off;
+}
+
+int file_tell(int file) {
+    uint16_t off;
+    timeout = CARD_TIMEOUT;
+
+    FS_FILE = file;
+    FS_COMMAND = FS_TELL;
+    FS_BUSY = 0xFF;
+    FS_EXECUTE = 0x00;
+
+    while(FS_BUSY && (timeout > 0)) {
+        timeout--;
+    }
+
+    if(FS_BUSY) {
+        message("I/O Error");
+        return FS_ERR_IO;
+    }
+
+    if(FS_STATUS != FS_ERR_OK) {
+        return FS_STATUS;
+    }
+
+    off = (((uint16_t)FS_SIZEMSB) << 8) | (uint16_t)FS_SIZELSB;
+    return off;
+}
+
 void main (void) {
     int paint_menu = 1;
-    uint16_t i;
-
+    int file;
+    
     if(!prompt_slot()) {
         return;
     }
@@ -261,25 +421,29 @@ void main (void) {
     gotoy(12); gotox(8);
     cputs("your screen may flicker.");
 
-    cfg_cmd("BANK=SAVE");
-    cfg_cmd("BANK=FONT0");
-    for(i = 0; i < 0x200; i++) {
-        FS_BUFFER[i] = font[i];
+    cfg_cmd("MODE=FS");
+    while(memcmp(cfgbuf+24, "FSREADY.", 8) && (timeout > 0)) {
+        timeout--;
     }
-    cfg_cmd("BANK=FONT1");
-    for(i = 0; i < 0x200; i++) {
-        FS_BUFFER[i] = font[i+512];
+    if(timeout == 0) {
+        message("Communication Timeout");
+        clrscr();
+        return;
     }
-    cfg_cmd("BANK=FONT2");
-    for(i = 0; i < 0x200; i++) {
-        FS_BUFFER[i] = font[i+1024];
-    }
-    cfg_cmd("BANK=FONT3");
-    for(i = 0; i < 0x200; i++) {
-        FS_BUFFER[i] = font[i+1536];
-    }
-    cfg_cmd("BANK=RESTORE");
 
+    file = file_open("font", FS_O_WR | FS_O_CREATE);
+    if(file >= 0) {
+        file_write(file, (char *)font, 2048);
+        file_close(file);
+    }
+
+    paint_backdrop("Please Wait");
+    gotoy(11); gotox(13);
+    cputs("Rebooting card,");
+    gotoy(12); gotox(8);
+    cputs("your screen may flicker.");
+
+    cfg_cmd("REBOOT");
     clrscr();
     puts("Done.\n");
 }

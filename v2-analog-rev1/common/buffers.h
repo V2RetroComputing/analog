@@ -2,10 +2,14 @@
 
 #include <stdint.h>
 
-extern volatile uint8_t config_memory[32];
+extern volatile uint8_t cardslot;
+extern volatile uint32_t busactive;
 
 extern volatile uint8_t apple_memory[64*1024];
 extern volatile uint8_t private_memory[64*1024];
+
+#define config_cmdbuf ((uint8_t*)(apple_memory+0xC0F0+(cardslot<<8)))
+#define config_errbuf ((uint8_t*)(apple_memory+0xC0F8+(cardslot<<8)))
 
 extern volatile uint8_t *text_p1;
 extern volatile uint8_t *text_p2;

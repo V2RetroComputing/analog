@@ -34,11 +34,10 @@ else
   LD := $(if $(wildcard ../../bin/ld65*),../../bin/ld65,ld65)
 endif
 
-EXELIST_apple2 = \
-        uploadfont
+EXELIST_apple2 = uploadfont/uploadfont uploadfont/flashfont configtool/configtool
 
 ifneq ($(EXELIST_$(SYS)),)
-all: $(EXELIST_$(SYS))
+all: disk $(EXELIST_$(SYS))
 else
 all: notavailable
 endif
@@ -52,15 +51,17 @@ else
 	@echo > $(NULLDEV)
 endif
 
-disk: font.dsk
+disk: v2a525.po v2a35.po
 
-font.dsk: uploadfont
-	cp prodos/prodos.dsk $@
-	java -jar $(AC) -n   $@ FONTDISK
-	java -jar $(AC) -p   $@ BASIC.SYSTEM     SYS 0x2000  <prodos/basic.system
-	java -jar $(AC) -p   $@ BITSY.BOOT       SYS 0x2000  <prodos/bitsy.boot
-	java -jar $(AC) -p   $@ QUIT.SYSTEM      SYS 0x2000  <prodos/quit.system
-	java -jar $(AC) -as  $@ UPLOADFONT                   <uploadfont
+v2a525.po: uploadfont/uploadfont uploadfont/uploadfonte uploadfont/flashfont uploadfont/flashfonte configtool/v2acfg configtool/v2acfge
+	cp prodos/pd525.po $@
+	java -jar $(AC) -n   $@ V2ANALOG
+	java -jar $(AC) -as  $@ UPLOADFONT                   <uploadfont/uploadfont
+	java -jar $(AC) -as  $@ UPLOADFONTE                  <uploadfont/uploadfonte
+	java -jar $(AC) -as  $@ FLASHFONT                    <uploadfont/flashfont
+	java -jar $(AC) -as  $@ FLASHFONTE                   <uploadfont/flashfonte
+	java -jar $(AC) -as  $@ V2ACFG                       <configtool/v2acfg
+	java -jar $(AC) -as  $@ V2ACFGE                      <configtool/v2acfge
 	java -jar $(AC) -p   $@ IIC.FONT         BIN 0x2000  <fonts/iicfont.bin
 	java -jar $(AC) -p   $@ IIPLUS.FONT      BIN 0x2000  <fonts/iiplus.bin
 	java -jar $(AC) -p   $@ LOWERCASE.FONT   BIN 0x2000  <fonts/lcase.bin
@@ -74,9 +75,45 @@ font.dsk: uploadfont
 	java -jar $(AC) -bas $@ MOUSETEXT.BAS                <prodos/mousetext.bas
 	java -jar $(AC) -bas $@ REACTIVE.BAS                 <prodos/reactive.bas
 
-uploadfont: uploadfont.c
-	$(CL) -Oirs -t apple2 --start-addr 0x4000 -m uploadfont.map $^
+v2a35.po: uploadfont/uploadfont uploadfont/uploadfonte uploadfont/flashfont uploadfont/flashfonte configtool/v2acfg configtool/v2acfge
+	cp prodos/pd35.po $@
+	java -jar $(AC) -n   $@ V2ANALOG
+	java -jar $(AC) -as  $@ UPLOADFONT                   <uploadfont/uploadfont
+	java -jar $(AC) -as  $@ UPLOADFONTE                  <uploadfont/uploadfonte
+	java -jar $(AC) -as  $@ FLASHFONT                    <uploadfont/flashfont
+	java -jar $(AC) -as  $@ FLASHFONTE                   <uploadfont/flashfonte
+	java -jar $(AC) -as  $@ V2ACFG                       <configtool/v2acfg
+	java -jar $(AC) -as  $@ V2ACFGE                      <configtool/v2acfge
+	java -jar $(AC) -p   $@ IIC.FONT         BIN 0x2000  <fonts/iicfont.bin
+	java -jar $(AC) -p   $@ IIPLUS.FONT      BIN 0x2000  <fonts/iiplus.bin
+	java -jar $(AC) -p   $@ LOWERCASE.FONT   BIN 0x2000  <fonts/lcase.bin
+	java -jar $(AC) -p   $@ PIG.FONT         BIN 0x2000  <fonts/pigfont.bin
+	java -jar $(AC) -p   $@ MOUSETEXT.FONT   BIN 0x2000  <fonts/iiemouse.bin
+	java -jar $(AC) -p   $@ REACTIVE.FONT    BIN 0x2000  <fonts/reactive.bin
+	java -jar $(AC) -bas $@ IICFONT.BAS                  <prodos/iicfont.bas
+	java -jar $(AC) -bas $@ IIPLUS.BAS                   <prodos/iiplus.bas
+	java -jar $(AC) -bas $@ LOWERCASE.BAS                <prodos/lowercase.bas
+	java -jar $(AC) -bas $@ PIGFONT.BAS                  <prodos/pigfont.bas
+	java -jar $(AC) -bas $@ MOUSETEXT.BAS                <prodos/mousetext.bas
+	java -jar $(AC) -bas $@ REACTIVE.BAS                 <prodos/reactive.bas
+
+uploadfont/uploadfont: uploadfont/uploadfont.c
+	$(MAKE) -C uploadfont uploadfont
+
+uploadfont/uploadfonte: uploadfont/uploadfont.c
+	$(MAKE) -C uploadfont uploadfonte
+
+uploadfont/flashfont: uploadfont/flashfont.c
+	$(MAKE) -C uploadfont flashfont
+
+uploadfont/flashfonte: uploadfont/flashfont.c
+	$(MAKE) -C uploadfont flashfonte
+
+configtool/v2acfg: configtool/configtool.c
+	$(MAKE) -C configtool v2acfg
+
+configtool/v2acfge: configtool/configtool.c
+	$(MAKE) -C configtool v2acfge
 
 clean:
 	@$(DEL) font.dsk 2>$(NULLDEV)
-	@$(DEL) uploadfont uploadfont.map 2>$(NULLDEV)

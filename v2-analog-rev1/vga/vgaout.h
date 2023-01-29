@@ -32,8 +32,6 @@ struct vga_scanline {
 };
 
 
-void vga_init();
-void vga_deinit();
 
 void vga_prepare_frame();
 struct vga_scanline *vga_prepare_scanline();

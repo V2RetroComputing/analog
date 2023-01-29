@@ -25,7 +25,7 @@ void diagmain() {
     memset((uint8_t*)(apple_memory+0xC700), 0xC7, 0x100);
     memset((uint8_t*)(apple_memory+0xC800), 0xC8, 0x800);
 
-    while(v2mode == MODE_DIAG) {
+    while(current_mode == MODE_DIAG) {
         sleep_ms(50);
     }
 }

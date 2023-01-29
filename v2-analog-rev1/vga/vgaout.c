@@ -179,8 +179,6 @@ void vga_init() {
 
     // Enable all state machines in sync to ensure their instruction cycles line up
     pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
-
-    multicore_lockout_victim_init();
 }
 
 

@@ -196,7 +196,7 @@ void fs_handler(uint8_t slot) {
 void fsmain() {
     int i;
 
-    memset((uint8_t*)(apple_memory+0xC000), 0x00, 0x1000);
+    memset((uint8_t*)(apple_memory+0xC000), 0xFF, 0x1000);
 
     for(i = 0; i < FS_MAXFILE; i++) {
         fs_file[i].handle = -1;
@@ -207,15 +207,12 @@ void fsmain() {
     fs_file[0].handle = pico_open("boot.dsk", LFS_O_RDONLY);
     fs_file[0].valid = (fs_file[0].handle >= 0);
 
-    strcpy((uint8_t*)(apple_memory+0xC1E0), "FSREADY.");
-    strcpy((uint8_t*)(apple_memory+0xC2E0), "FSREADY.");
-    strcpy((uint8_t*)(apple_memory+0xC3E0), "FSREADY.");
-    strcpy((uint8_t*)(apple_memory+0xC4E0), "FSREADY.");
-    strcpy((uint8_t*)(apple_memory+0xC5E0), "FSREADY.");
-    strcpy((uint8_t*)(apple_memory+0xC6E0), "FSREADY.");
-    strcpy((uint8_t*)(apple_memory+0xC7E0), "FSREADY.");
+    strcpy((char*)(apple_memory+0xC0E0+(cardslot << 8)), "FSREADY.");
 
-    while(v2mode == MODE_FS) {
+    while(current_mode == MODE_FS) {
+        config_handler();
+        if(cardslot != 0)
+            fs_handler(cardslot);
         sleep_ms(50);
     }
 

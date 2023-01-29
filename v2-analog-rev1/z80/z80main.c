@@ -9,7 +9,7 @@ volatile uint8_t rom_shadow = 1;
 volatile uint8_t ram_bank = 0;
 volatile uint8_t ram_common = 0;
 
-#define Z80break (z80_res || (v2mode != MODE_APPLICARD))
+#define Z80break (z80_res || (current_mode != MODE_APPLICARD) || (config_cmdbuf[7] == 0))
 
 uint8_t cpu_in(uint16_t address) {
     uint8_t rv = 0;
@@ -85,23 +85,31 @@ void _RamWrite(uint16_t address, uint8_t value) {
 #include "z80cpu.h"
 
 void z80main() {
-    while(v2mode == MODE_APPLICARD) {
-        rom_shadow = 1;
-        ram_bank = 0;
-        ram_common = 0;
+    z80_res = 1;
 
-        z80_nmi = 0;
-        z80_irq = 0;
-        z80_res = 0;
+    while(current_mode == MODE_APPLICARD) {
+        config_handler();
+        if(cardslot != 0) {
+            if(z80_res) {
+                rom_shadow = 1;
+                ram_bank = 0;
+                ram_common = 0;
 
-        // 6502 -> Z80
-        clr_z80_stat;
+                z80_nmi = 0;
+                z80_irq = 0;
+                z80_res = 0;
 
-        // Z80 -> 6502
-        clr_6502_stat;
+                // 6502 -> Z80
+                clr_z80_stat;
 
-        Z80reset();
-        Z80run();
+                // Z80 -> 6502
+                clr_6502_stat;
+
+                Z80reset();
+            }
+
+            Z80run();
+        }
     }
 }
 

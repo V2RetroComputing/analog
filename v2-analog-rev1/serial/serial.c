@@ -14,7 +14,8 @@ void serialmain() {
     memcpy((void*)(apple_memory + 0xC100), (void*)(ssc_rom + 0x700), 0x100);
     memcpy((void*)(apple_memory + 0xC200), (void*)(apple_memory + 0xC100), 0x600);
 
-    while(v2mode == MODE_SERIAL) {
+    while(current_mode == MODE_SERIAL) {
+        config_handler();
         switch(serialmux) {
 #if 0        
         case SERIAL_USB:

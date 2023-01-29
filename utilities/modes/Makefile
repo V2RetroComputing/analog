@@ -31,7 +31,7 @@ else
   LD := $(if $(wildcard ../../bin/ld65*),../../bin/ld65,ld65)
 endif
 
-EXELIST_apple2 = uploadfont uploadfonte flashfont flashfonte
+EXELIST_apple2 = modeswitch
 
 ifneq ($(EXELIST_$(SYS)),)
 all: $(EXELIST_$(SYS))
@@ -42,27 +42,15 @@ endif
 # empty target used to skip systems that will not work with any program in this dir
 notavailable:
 ifeq ($(MAKELEVEL),0)
-	@echo "info: uploadfont not available for" $(SYS)
+	@echo "info: modeswitch not available for" $(SYS)
 else
 # suppress the "nothing to be done for 'all' message
 	@echo > $(NULLDEV)
 endif
 
-uploadfont: uploadfont.c
-	$(CL) -Oirs -t apple2 --start-addr 0x2800 -m $@.map -o $@  $^
-	~/applesingle/applesingle -r < $@ > $@"#062800"
-
-uploadfonte: uploadfont.c
-	$(CL) -Oirs -t apple2enh --start-addr 0x2800 -m $@.map -o $@  $^
-	~/applesingle/applesingle -r < $@ > $@"#062800"
-
-flashfont: flashfont.c
-	$(CL) -Oirs -t apple2 --start-addr 0x2800 -m $@.map -o $@ $^
-	~/applesingle/applesingle -r < $@ > $@"#062800"
-
-flashfonte: flashfont.c
-	$(CL) -Oirs -t apple2enh --start-addr 0x2800 -m $@.map -o $@ $^
-	~/applesingle/applesingle -r < $@ > $@"#062800"
+modeswitch: modeswitch.c
+	$(CL) -Oirs -t apple2 --start-addr 0x2000 -m $@.map -o $@  $^
+	~/applesingle/applesingle -r < $@ > $@"#062000"
 
 clean:
-	@$(DEL) uploadfont uploadfont.map uploadfonte uploadfonte.map flashfont flashfont.map flashfonte flashfonte.map 2>$(NULLDEV)
+	@$(DEL) modeswitch modeswitch.map 2>$(NULLDEV)

@@ -100,11 +100,11 @@ static void __time_critical_func(render_hires_line)(bool p2, uint line) {
 
         if(soft_switches & SOFTSW_MONOCHROME) {
             // Consume 14 dots
-            for(j = 0; j < 14; j++) {
-                uint32_t pixeldata = (dots & 0x2000) ? (0x1ff|THEN_EXTEND_1) : (0x000|THEN_EXTEND_1);
-                pixeldata |= (dots & 0x1000) ?
-                    ((uint32_t)0x1ff|THEN_EXTEND_1) << 16 :
-                    ((uint32_t)0x000|THEN_EXTEND_1) << 16;
+            for(j = 0; j < 7; j++) {
+                uint32_t pixeldata = (dots & 0x80000000) ? (0x1ff) : (0x000);
+                pixeldata |= (dots & 0x40000000) ?
+                    ((uint32_t)0x1ff) << 16 :
+                    ((uint32_t)0x000) << 16;
                 dots <<= 2;
                 sl->data[sl_pos] = pixeldata;
                 sl_pos++;

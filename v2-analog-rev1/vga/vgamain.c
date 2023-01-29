@@ -11,5 +11,5 @@ void __noinline __time_critical_func(vgamain)() {
     vga_init();
     render_init();
     render_loop();
-    vga_deinit();
+//    vga_deinit();
 }

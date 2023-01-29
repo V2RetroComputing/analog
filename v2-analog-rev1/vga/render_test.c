@@ -14,10 +14,20 @@
 
 char error_message[16*24+1];
 
+void render_test_sleep() {
+    memcpy(error_message + 208, "  APPLE II BUS  ", 16);
+    memcpy(error_message + 224, "    ACTIVITY    ", 16);
+    memcpy(error_message + 240, "  NOT DETECTED  ", 16);
+
+    memcpy(error_message + 272, "SCREEN BLANKING ", 16);
+    memcpy(error_message + 288, " IN 15 SECONDS  ", 16);
+    memcpy(error_message + 304, "                ", 16);
+}
+
 void render_test_init() {
     memset(error_message, ' ', 16*24);
     memcpy(error_message +   0, "HW: ANALOG-REV-1", 16);
-    memcpy(error_message +  16, "FW: 23-01-16-119", 16);
+    memcpy(error_message +  16, "FW: 23-01-19-131", 16);
 
     memcpy(error_message +  64, "  COPYRIGHT (C) ", 16);
     memcpy(error_message +  80, "   DAVID KUDER  ", 16);

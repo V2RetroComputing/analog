@@ -14,6 +14,8 @@ void parallelmain() {
     // Copy Grappler ROM to Extended ROM area
     memcpy((void*)(apple_memory + 0xC800), (void*)(grappler_rom), 0x800);
 
-    while(v2mode == MODE_PARALLEL) {
+    while(current_mode == MODE_PARALLEL) {
+        config_handler();
+        sleep_ms(50);
     }
 }

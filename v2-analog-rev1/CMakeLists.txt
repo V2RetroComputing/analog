@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
+if(${CMAKE_CURRENT_BINARY_DIR} MATCHES "build-lc")
+set(PICO_BOARD pico)
+else()
 set(PICO_BOARD pico_w)
+endif()
+
 set(PICO_TARGET_LINKER_SCRIPT memmap_ota.ld)
 
 # Pull in SDK (must be before project)
@@ -23,7 +28,7 @@ pico_generate_pio_header(v2-analog-${PICO_BOARD}
 target_sources(v2-analog-${PICO_BOARD} PUBLIC
     common/ota.o
     common/buffers.c
-    common/flash_upload.c
+    common/flash.c
     common/abus.c
     common/config.c
     common/main.c

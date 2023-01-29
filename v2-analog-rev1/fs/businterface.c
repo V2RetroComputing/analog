@@ -6,7 +6,9 @@
 #include "fs/businterface.h"
 #include "fs/fs.h"
 
-static inline void __time_critical_func(shadow_memory)(uint32_t address, uint32_t value) {
+volatile uint8_t fs_slot = 0;
+
+void __time_critical_func(fs_businterface)(uint32_t address, uint32_t value) {
     // Shadow parts of the Apple's memory by observing the bus write cycles
     if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0) {
         if(address < 0x200) {
@@ -28,22 +30,11 @@ static inline void __time_critical_func(shadow_memory)(uint32_t address, uint32_
         if(CARD_DEVSEL) {
             if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0) {
                 apple_memory[address] = value;
-                if((address & 0xCF8F) == 0xC08F)
-                    fs_handler((address & 0x70) >> 4);
             }
         }
 
         if(CARD_IOSTROBE) {
             apple_memory[address] = value;
-        }
-
-        // Config memory in card slot-rom address space
-        if(CARD_IOSEL) {
-            if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0) {
-                config_memory[address & 0x1F] = value;
-                if((address & 0xFF) == 0xFF)
-                    config_handler();
-            }
         }
     }
 
@@ -71,25 +62,5 @@ static inline void __time_critical_func(shadow_memory)(uint32_t address, uint32_
                 break;
             }
         }
-    }
-}
-
-
-void __time_critical_func(fs_businterface)() {
-    while(v2mode == MODE_DIAG) {
-        uint32_t value = pio_sm_get_blocking(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
-        uint32_t dout;
-        uint32_t address = (value >> 10) & 0xffff;
-
-        if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) != 0) {
-            if(CARD_SELECT) {
-                dout = apple_memory[address];
-
-                // device read access
-                pio_sm_put_blocking(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM, dout);
-            }
-        }
-
-        shadow_memory(address, value);
     }
 }

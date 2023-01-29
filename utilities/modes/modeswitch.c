@@ -10,8 +10,6 @@
 
 uint16_t cardslot = 3;
 uint8_t *cfgbuf;
-uint8_t *fsbuf;
-uint8_t *font = (uint8_t *)0x2000;
 
 void paint_backdrop(char *str) {
     int w, i;
@@ -224,7 +222,7 @@ void cfg_cmd(char *cmd) {
 
 int prompt_slot(void) {
     int c;
-    paint_backdrop("Font Upload");
+    paint_backdrop("Mode Switch");
 
     gotoy(11); gotox(2);
     cputs("Which slot is the card installed in?");
@@ -246,40 +244,56 @@ int prompt_slot(void) {
 
 void main (void) {
     int paint_menu = 1;
-    uint16_t i;
+    int c;
 
     if(!prompt_slot()) {
         return;
     }
 
-    cfgbuf = (uint8_t *)CFG_BUFFER;
-    fsbuf = (uint8_t *)FS_BUFFER;
+    cfgbuf = (uint8_t *)(0xC0E0 | (cardslot << 8));
 
-    paint_backdrop("Please Wait");
-    gotoy(11); gotox(13);
-    cputs("Uploading font,");
-    gotoy(12); gotox(8);
-    cputs("your screen may flicker.");
+    paint_backdrop("Mode Switch");
+    gotoy(11); gotox(4);
+    cputs("1. VGA Card");
+    gotoy(12); gotox(4);
+    cputs("2. PCPI Applicard");
+    gotoy(13); gotox(4);
+    cputs("3. Serial");
+    gotoy(14); gotox(4);
+    cputs("4. Parallel");
+    gotoy(15); gotox(4);
+    cputs("5. Card Diagnostic");
+    gotoy(18); gotox(4);
+    cputs("8. Save Default");
+    gotoy(19); gotox(4);
+    cputs("9. Quit");
 
-    cfg_cmd("BANK=SAVE");
-    cfg_cmd("BANK=FONT0");
-    for(i = 0; i < 0x200; i++) {
-        FS_BUFFER[i] = font[i];
+    for(;;) {
+        c = cgetc();
+        switch(c) {
+        case '1':
+            cfg_cmd("MODE=VGA");
+            break;
+        case '2':
+            cfg_cmd("MODE=Z80");
+            break;
+        case '3':
+            cfg_cmd("MODE=SERIAL");
+            break;
+        case '4':
+            cfg_cmd("MODE=PARALLEL");
+            break;
+        case '5':
+            cfg_cmd("MODE=DIAG");
+            break;
+        case '8':
+            cfg_cmd("WRITE_CONFIG");
+            break;
+        case '9':
+            clrscr();
+            puts("Done.\n");
+            return;
+        }
     }
-    cfg_cmd("BANK=FONT1");
-    for(i = 0; i < 0x200; i++) {
-        FS_BUFFER[i] = font[i+512];
-    }
-    cfg_cmd("BANK=FONT2");
-    for(i = 0; i < 0x200; i++) {
-        FS_BUFFER[i] = font[i+1024];
-    }
-    cfg_cmd("BANK=FONT3");
-    for(i = 0; i < 0x200; i++) {
-        FS_BUFFER[i] = font[i+1536];
-    }
-    cfg_cmd("BANK=RESTORE");
 
-    clrscr();
-    puts("Done.\n");
 }
