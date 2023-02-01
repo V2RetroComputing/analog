@@ -7,8 +7,8 @@
 #define hires_memory hgr_p1
 #define videx_memory (private_memory+0xF000)
 
-extern uint8_t character_rom[4096];
-extern uint8_t terminal_rom[2048];
+extern uint8_t character_rom[2048];
+extern uint8_t videx_character_rom[2048];
 
 extern volatile uint8_t videx_crtc_reg;
 extern volatile uint8_t videx_addr;

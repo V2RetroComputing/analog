@@ -22,6 +22,9 @@ void switch_font() {
     case MACHINE_II:
         memcpy(character_rom, default_character_rom, 2048);
         break;
+    case MACHINE_PRAVETZ:
+        memcpy(character_rom, pravetz_character_rom, 2048);
+        break;
     case MACHINE_IIE:
         memcpy(character_rom, appleiie_character_rom, 2048);
         break;
@@ -51,6 +54,53 @@ void load_font() {
     return;
 }
 
+uint16_t status_timeout = 900;
+uint8_t status_line[81];
+
+void update_status_right(const char *str) {
+    uint i, len;
+
+    if(str != NULL) {
+        len = strlen(str);
+    } else {
+        len = 0;
+    }
+
+    if(len < 80) {
+        memset(status_line, ' ', 80 - len);
+    } else {
+        len = 80;
+    }
+
+    for(i = 0; i < len; i++) {
+        status_line[(80-len) + i] = str[i];
+    }
+    
+    status_timeout = 900;
+}
+
+void update_status_left(const char *str) {
+    uint i, len;
+
+    if(str != NULL) {
+        len = strlen(str);
+    } else {
+        len = 0;
+    }
+
+    if(len < 80) {
+        memset(status_line + len, ' ', 80 - len);
+    } else {
+        len = 80;
+    }
+
+    for(i = 0; i < len; i++) {
+        status_line[i] = str[i];
+    }
+
+    status_timeout = 900;
+}
+
 void render_init() {
     int i;
 
@@ -63,11 +113,14 @@ void render_init() {
     terminal_tbcolor = 0xf0;
     terminal_border = 0x00;
 
+    memcpy(videx_character_rom, appleiie_character_rom, 2048);
+    memset(status_line, 0, sizeof(status_line));
+
     render_test_init();
 }
 
-// Blank screen
-void __time_critical_func(render_blank)() {
+// Skip 48 lines to center vertically
+void __time_critical_func(render_border)(uint count) {
     struct vga_scanline *sl = vga_prepare_scanline();
     uint sl_pos = 0;
 
@@ -77,7 +130,7 @@ void __time_critical_func(render_blank)() {
     }
 
     sl->length = sl_pos;
-    sl->repeat_count = 479;
+    sl->repeat_count = count - 1;
     vga_submit_scanline(sl);
 }
 
@@ -87,25 +140,29 @@ uint32_t testdone = 0;
 void __noinline __time_critical_func(render_loop)() {
     while(current_mode == MODE_VGACARD) {
         config_handler();
-#if 0
-        if((busactive == 0) && (screentimeout > (30 * 60))) {
-            render_blank();
-        } else if((busactive == 0) && (screentimeout > (15 * 60))) {
-            render_testpattern();
-            screentimeout++;
-        } else if((busactive == 0) && (screentimeout == 15 * 60)) {
-            render_test_sleep();
-            render_testpattern();
-            screentimeout++;
+        if((busactive == 0) && (screentimeout > (15 * 60))) {
+            vga_prepare_frame();
+            render_border(480);
+            memset(status_line, 0, sizeof(status_line));
+            status_timeout = 0;
+            vga_dpms_sleep();
+            while(busactive == 0);
+            vga_dpms_wake();
         } else {
             if(busactive == 0) {
                 screentimeout++;
+                if(screentimeout == 5) {
+                    update_status_right("Going to sleep...");
+                }
             } else {
+                if(screentimeout >= 5) {
+                    // Clear the sleep mode message
+                    memset(status_line, 0, sizeof(status_line));
+                    status_timeout = 0;
+                }
                 screentimeout = 0;
             }
-
             busactive = 0;
-#endif
 
             if(!userfont && (machinefont != current_machine)) {
                 switch_font();
@@ -132,6 +189,16 @@ void __noinline __time_critical_func(render_loop)() {
                 render_shr();
 #endif
             } else {
+                vga_prepare_frame();
+
+                render_border(24);
+                if(status_line[0] != 0) {
+                    render_status_line();
+                    render_border(16);
+                } else {
+                    render_border(32);
+                }
+
                 switch(soft_switches & SOFTSW_MODE_MASK) {
                 case 0:
                     if(soft_switches & SOFTSW_DGR) {
@@ -165,7 +232,9 @@ void __noinline __time_critical_func(render_loop)() {
                     render_text();
                     break;
                 }
+
+                render_border(48);
             }
-//        }
+        }
     }
 }

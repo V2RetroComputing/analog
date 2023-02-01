@@ -7,7 +7,6 @@
 
 
 volatile uint8_t *videx_page = videx_memory;
-uint32_t a2_first_write = 0;
 
 static inline void __time_critical_func(videx_crtc_addr)(uint32_t value) {
 }
@@ -150,24 +149,6 @@ void __time_critical_func(vga_businterface)(uint32_t address, uint32_t value) {
 
     // Shadow parts of the Apple's memory by observing the bus write cycles
     if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0) {
-        if(current_machine == MACHINE_AUTO) {
-            a2_first_write = (address << 16) | (value & 0x3FF);
-            if(a2_first_write == 0xC0330100) { // Apple IIgs ROM03 Clock Access
-                current_machine = MACHINE_IIGS;
-                soft_switches &= ~SOFTSW_IIE_REGS;
-                soft_switches |= SOFTSW_IIGS_REGS;
-            } else if(a2_first_write == 0x01F901FB) { // Apple II Plus
-                current_machine = MACHINE_II;
-                soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
-            } else if(a2_first_write == 0x01F5018B) { // Apple IIe Platinum
-                current_machine = MACHINE_IIE;
-                soft_switches |= SOFTSW_IIE_REGS;
-                soft_switches &= ~SOFTSW_IIGS_REGS;
-            } else {
-                a2_first_write = 0;
-            }
-        }
-
         // Mirror Video Memory from MAIN & AUX banks
         if(soft_switches & SOFTSW_LINEARIZE) {
             if((address >= 0x2000) && (address < 0xC000)) {

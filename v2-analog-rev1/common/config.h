@@ -63,6 +63,9 @@ typedef enum {
     MACHINE_II = 0,
     MACHINE_IIE = 1,
     MACHINE_IIGS = 2,
+    MACHINE_PRAVETZ = 6,
+    MACHINE_AGAT7 = 7,
+    MACHINE_AGAT9 = 9,
     MACHINE_AUTO = 0xff
 } compat_t;
 

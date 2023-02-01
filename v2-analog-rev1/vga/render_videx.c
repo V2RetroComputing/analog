@@ -5,7 +5,7 @@
 #include "vgaout.h"
 
 static inline uint_fast8_t __time_critical_func(char_terminal_bits)(uint_fast8_t ch, uint_fast8_t glyph_line) {
-    uint_fast8_t bits = character_rom[((uint_fast16_t)ch << 3) | glyph_line];
+    uint_fast8_t bits = videx_character_rom[((uint_fast16_t)ch << 3) | glyph_line];
     if(ch & 0x80) {
         // normal character
         return bits & 0x7f;
@@ -22,15 +22,9 @@ static inline uint_fast8_t __time_critical_func(char_terminal_bits)(uint_fast8_t
 
 
 void __time_critical_func(render_videx)() {
-    vga_prepare_frame();
-
-    render_border();
-
     for(int line=0; line < 24; line++) {
         render_videx_line(line);
     }
-
-    render_border();
 }
 
 
@@ -79,3 +73,4 @@ void __time_critical_func(render_videx_line)(unsigned int line) {
         vga_submit_scanline(sl);
     }
 }
+

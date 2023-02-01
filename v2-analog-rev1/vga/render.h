@@ -7,6 +7,10 @@
 
 extern uint16_t lores_palette[16];
 extern uint16_t text_fore, text_back, text_border;
+extern uint8_t status_line[81];
+
+extern void update_status_left(const char *str);
+extern void update_status_right(const char *str);
 
 extern void render_init();
 extern void render_loop();
@@ -20,11 +24,12 @@ extern void update_text_flasher();
 extern void render_text();
 extern void render_text40_line(bool p2, unsigned int line);
 extern void render_text80_line(bool p2, unsigned int line);
+extern void render_status_line();
 
 extern void render_videx();
 extern void render_videx_line(unsigned int line);
 
-extern void render_border();
+extern void render_border(uint count);
 
 extern void render_lores();
 extern void render_mixed_lores();

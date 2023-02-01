@@ -4,6 +4,8 @@
 #include "character_rom.h"
 #include "vgaout.h"
 
+//#define PAGE2SEL (!(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2))
+#define PAGE2SEL ((soft_switches & (SOFTSW_80STORE | SOFTSW_PAGE_2)) == SOFTSW_PAGE_2)
 
 uint_fast32_t text_flasher_mask = 0;
 static uint64_t next_flash_tick = 0;
@@ -12,7 +14,18 @@ void update_text_flasher() {
     uint64_t now = time_us_64();
     if(now > next_flash_tick) {
         text_flasher_mask ^= 0x7f;
-        next_flash_tick = now + 250000u;
+
+        switch(current_machine) {
+        default:
+        case MACHINE_II:
+        case MACHINE_PRAVETZ:
+            next_flash_tick = now + 125000u;
+            break;
+        case MACHINE_IIE:
+        case MACHINE_IIGS:
+            next_flash_tick = now + 250000u;
+            break;
+        }
     }
 }
 
@@ -34,40 +47,14 @@ static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch,
     return bits;
 }
 
-
-// Skip 48 lines to center vertically
-void __time_critical_func(render_border)() {
-    struct vga_scanline *sl = vga_prepare_scanline();
-    uint sl_pos = 0;
-
-    while(sl_pos < VGA_WIDTH/16) {
-        sl->data[sl_pos] = (text_border|THEN_EXTEND_7) | ((text_border|THEN_EXTEND_7) << 16); // 8 pixels per word
-        sl_pos++;
-    }
-
-    sl->length = sl_pos;
-    sl->repeat_count = 47;
-    vga_submit_scanline(sl);
-}
-
 void __time_critical_func(render_text)() {
-    vga_prepare_frame();
-
-    render_border();
-
-    bool p2 = !(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2);
-
-    if(soft_switches & SOFTSW_80COL) {
-        for(uint line=0; line < 24; line++) {
-            render_text80_line(p2, line);
-        }
-    } else {
-        for(uint line=0; line < 24; line++) {
-            render_text40_line(p2, line);
+    for(uint line=0; line < 24; line++) {
+        if(soft_switches & SOFTSW_80COL) {
+            render_text80_line(PAGE2SEL, line);
+        } else {
+            render_text40_line(PAGE2SEL, line);
         }
     }
-
-    render_border();
 }
 
 void __time_critical_func(render_text40_line)(bool p2, unsigned int line) {
@@ -116,7 +103,6 @@ void __time_critical_func(render_text40_line)(bool p2, unsigned int line) {
     }
 }
 
-
 void __time_critical_func(render_text80_line)(bool p2, unsigned int line) {
     const uint8_t *page_a = (const uint8_t *)(p2 ? text_p2 : text_p1);
     const uint8_t *page_b = (const uint8_t *)(p2 ? text_p4 : text_p3);
@@ -133,7 +119,7 @@ void __time_critical_func(render_text80_line)(bool p2, unsigned int line) {
         sl->data[sl_pos++] = (text_border|THEN_EXTEND_3) | ((text_border|THEN_EXTEND_3) << 16); // 8 pixels per word
 
         for(uint col=0; col < 40; ) {
-            // Grab 14 pixels from the next four characters
+            // Grab 14 pixels from the next two characters
             uint32_t bits_a = char_text_bits(line_buf_a[col], glyph_line);
             uint32_t bits_b = char_text_bits(line_buf_b[col], glyph_line);
             col++;
@@ -163,3 +149,4 @@ void __time_critical_func(render_text80_line)(bool p2, unsigned int line) {
         vga_submit_scanline(sl);
     }
 }
+

@@ -52,6 +52,9 @@ void parse_config(uint8_t *buffer) {
         } else if(!strcmp("IIGS", buffer+2)) {
             cfg_machine = MACHINE_IIGS;
             soft_switches |= SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS;
+        } else if(!strcmp("PRAVETZ", buffer+2)) {
+            cfg_machine = MACHINE_PRAVETZ;
+            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
         }
     } else if(!memcmp("S=", buffer, 2)) {
         if(!strcmp("USB", buffer+2)) {
@@ -313,7 +316,31 @@ void config_handler() {
     config_cmdbuf[7] = 0xff;
 
     if(!memcmp("H=", (uint8_t*)config_cmdbuf, 2)) {
-        parse_config((uint8_t*)config_cmdbuf);
+        if(!strcmp("II", config_cmdbuf+2)) {
+            current_machine = MACHINE_II;
+            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+        } else if(!strcmp("IIE", config_cmdbuf+2)) {
+            current_machine = MACHINE_IIE;
+            soft_switches &= ~SOFTSW_IIGS_REGS;
+            soft_switches |= SOFTSW_IIE_REGS;
+        } else if(!strcmp("IIGS", config_cmdbuf+2)) {
+            current_machine = MACHINE_IIGS;
+            soft_switches |= SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS;
+#if 0
+        } else if(!strcmp("B108", config_cmdbuf+2)) {
+            current_machine = MACHINE_BASIS;
+            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+        } else if(!strcmp("P", config_cmdbuf+2)) {
+            current_machine = MACHINE_PRAVETZ;
+            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+        } else if(!strcmp("A7", config_cmdbuf+2)) {
+            current_machine = MACHINE_AGAT7;
+            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+        } else if(!strcmp("A9", config_cmdbuf+2)) {
+            current_machine = MACHINE_AGAT9;
+            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+#endif
+        }
     } else if(!memcmp("UF", (uint8_t*)config_cmdbuf, 2)) {
         upload_font(config_cmdbuf[2]);
     } else if(!memcmp("DF", (uint8_t*)config_cmdbuf, 2)) {

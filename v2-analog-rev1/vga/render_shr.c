@@ -13,31 +13,16 @@ static uint16_t __time_critical_func(rgb444_to_rgb333)(uint16_t a) {
     return ((a & 0xe00) >> 3) | ((a & 0xe0) >> 2) | ((a & 0xe) >> 1);
 }
 
-// Skip 40 lines to center vertically
-void __time_critical_func(render_shr_border)() {
-    struct vga_scanline *sl = vga_prepare_scanline();
-    uint sl_pos = 0;
-
-    while(sl_pos < VGA_WIDTH/16) {
-        sl->data[sl_pos] = (text_border|THEN_EXTEND_7) | ((text_border|THEN_EXTEND_7) << 16); // 8 pixels per word
-        sl_pos++;
-    }
-
-    sl->length = sl_pos;
-    sl->repeat_count = 39;
-    vga_submit_scanline(sl);
-}
-
 void __time_critical_func(render_shr)() {
     vga_prepare_frame();
 
-    render_shr_border();
+    render_border(40);
 
     for(uint line=0; line < 200; line++) {
         render_shr_line(line);
     }
 
-    render_shr_border();
+    render_border(40);
 }
 
 static void __time_critical_func(render_shr_line)(uint16_t line) {

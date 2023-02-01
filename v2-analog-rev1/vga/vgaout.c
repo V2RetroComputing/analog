@@ -181,7 +181,14 @@ void vga_init() {
     pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
 }
 
+void vga_dpms_sleep() {
+    pio_set_sm_mask_enabled(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM), false);
+}
 
+void vga_dpms_wake() {
+    pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
+}
+    
 void vga_deinit() {
     // Disable DMA IRQ
     irq_set_enabled(DMA_IRQ_0, false);

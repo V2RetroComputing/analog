@@ -3,48 +3,32 @@
 #include "render.h"
 #include "vgaout.h"
 
+//#define PAGE2SEL (!(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2))
+#define PAGE2SEL ((soft_switches & (SOFTSW_80STORE | SOFTSW_PAGE_2)) == SOFTSW_PAGE_2)
 
 extern uint16_t lores_palette[16];
 
 static void render_dgr_line(bool p2, uint line);
 
 void __time_critical_func(render_dgr)() {
-    vga_prepare_frame();
-
-    render_border();
-
-    bool p2 = !(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2);
-
     for(uint line=0; line < 24; line++) {
-        render_dgr_line(p2, line);
+        render_dgr_line(PAGE2SEL, line);
     }
-
-    render_border();
 }
 
 
 void __time_critical_func(render_mixed_dgr)() {
-    vga_prepare_frame();
-
-    render_border();
-
-    bool p2 = !(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2);
-
     for(uint line=0; line < 20; line++) {
-        render_dgr_line(p2, line);
+        render_dgr_line(PAGE2SEL, line);
     }
 
-    if(soft_switches & SOFTSW_80COL) {
-        for(uint line=20; line < 24; line++) {
-            render_text80_line(p2, line);
-        }
-    } else {
-        for(uint line=20; line < 24; line++) {
-            render_text40_line(p2, line);
+    for(uint line=20; line < 24; line++) {
+        if(soft_switches & SOFTSW_80COL) {
+            render_text80_line(PAGE2SEL, line);
+        } else {
+            render_text40_line(PAGE2SEL, line);
         }
     }
-
-    render_border();
 }
 
 
