@@ -3,6 +3,7 @@
 #include "render.h"
 #include "character_rom.h"
 #include "vgaout.h"
+#include "common/config.h"
 
 //#define PAGE2SEL (!(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2))
 #define PAGE2SEL ((soft_switches & (SOFTSW_80STORE | SOFTSW_PAGE_2)) == SOFTSW_PAGE_2)
