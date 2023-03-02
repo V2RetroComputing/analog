@@ -15,6 +15,16 @@ uint16_t text_border;
 compat_t machinefont = MACHINE_II;
 bool userfont = false;
 
+uint16_t mono_colors[14] = {
+    _RGB333(0x00, 0x00, 0x00), _RGB333(0xFF, 0xFF, 0xFF), // White Normal
+    _RGB333(0xFF, 0xFF, 0xFF), _RGB333(0x00, 0x00, 0x00), // White Inverse
+    _RGB333(0x00, 0x00, 0x00), _RGB333(0xFE, 0x7F, 0x00), // Amber Normal
+    _RGB333(0xFE, 0x7F, 0x00), _RGB333(0x00, 0x00, 0x00), // Amber Inverse
+    _RGB333(0x00, 0x00, 0x00), _RGB333(0x00, 0xBF, 0x00), // Green Normal
+    _RGB333(0x00, 0xBF, 0x00), _RGB333(0x00, 0x00, 0x00), // Green Inverse
+    _RGB333(0x35, 0x28, 0x79), _RGB333(0x6C, 0x5E, 0xB5), // Commodore
+};
+
 // Initialize the character generator ROM
 void switch_font() {
     switch(current_machine) {
@@ -75,7 +85,7 @@ void update_status_right(const char *str) {
     for(i = 0; i < len; i++) {
         status_line[(80-len) + i] = str[i];
     }
-    
+
     status_timeout = 900;
 }
 
@@ -109,11 +119,11 @@ void render_init() {
         switch_font();
 
     if((soft_switches & SOFTSW_MODE_MASK) == 0)
-        soft_switches |= SOFTSW_TEST;
+        internal_flags |= IFLAGS_TEST;
     terminal_tbcolor = 0xf0;
     terminal_border = 0x00;
 
-    memcpy(videx_character_rom, appleiie_character_rom, 2048);
+    memcpy(terminal_character_rom, appleiie_character_rom, 2048);
     memset(status_line, 0, sizeof(status_line));
 
     render_test_init();
@@ -140,6 +150,7 @@ uint32_t testdone = 0;
 void __noinline __time_critical_func(render_loop)() {
     while(current_mode == MODE_VGACARD) {
         config_handler();
+
         if((busactive == 0) && (screentimeout > (15 * 60))) {
             vga_prepare_frame();
             render_border(480);
@@ -170,21 +181,27 @@ void __noinline __time_critical_func(render_loop)() {
 
             update_text_flasher();
 
-            text_fore = lores_palette[TERMINAL_FORE];
-            text_back = lores_palette[TERMINAL_BACK];
-            text_border = lores_palette[TERMINAL_BORDER];
+            if((soft_switches & SOFTSW_MONOCHROME) && (mono_palette != 0x7)) {
+                text_fore = mono_colors[mono_palette*2+1];
+                text_back = mono_colors[mono_palette*2];
+                text_border = (mono_palette == 0x6) ? text_fore : text_back;
+            } else {
+                text_fore = lores_palette[TERMINAL_FORE];
+                text_back = lores_palette[TERMINAL_BACK];
+                text_border = lores_palette[TERMINAL_BORDER];
+            }
 
-            if(soft_switches & SOFTSW_TEST) {
+            if(internal_flags & IFLAGS_TEST) {
                 render_testpattern();
                 // Automatically dismiss the test pattern when the Apple II is seen.
                 if(((soft_switches & SOFTSW_MODE_MASK) != 0) && (testdone == 0)) {
-                    soft_switches &= ~SOFTSW_TEST;
+                    internal_flags &= ~IFLAGS_TEST;
                     testdone = 1;
                     render_about_init();
                 }
 #if 0
-            } else if(soft_switches & SOFTSW_VIDEX) {
-                render_videx();
+            } else if(soft_switches & SOFTSW_TERMINAL) {
+                render_terminal();
             } else if(soft_switches & SOFTSW_SHR) {
                 render_shr();
 #endif

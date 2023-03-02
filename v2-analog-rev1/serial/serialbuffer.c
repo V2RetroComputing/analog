@@ -1,5 +1,4 @@
 #include "serial/serialbuffer.h"
-#include "serial/serialrom.h"
 
 volatile uint8_t *serial_reg = apple_memory + 0xC0A0;
 

@@ -44,17 +44,17 @@ void parse_config(uint8_t *buffer) {
             cfg_machine = MACHINE_AUTO;
         } else if(!strcmp("II", buffer+2)) {
             cfg_machine = MACHINE_II;
-            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+            internal_flags &= ~(IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS);
         } else if(!strcmp("IIE", buffer+2)) {
             cfg_machine = MACHINE_IIE;
-            soft_switches &= ~SOFTSW_IIGS_REGS;
-            soft_switches |= SOFTSW_IIE_REGS;
+            internal_flags &= ~IFLAGS_IIGS_REGS;
+            internal_flags |= IFLAGS_IIE_REGS;
         } else if(!strcmp("IIGS", buffer+2)) {
             cfg_machine = MACHINE_IIGS;
-            soft_switches |= SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS;
+            internal_flags |= IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS;
         } else if(!strcmp("PRAVETZ", buffer+2)) {
             cfg_machine = MACHINE_PRAVETZ;
-            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+            internal_flags &= ~(IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS);
         }
     } else if(!memcmp("S=", buffer, 2)) {
         if(!strcmp("USB", buffer+2)) {
@@ -97,7 +97,7 @@ void default_config() {
 
 int make_config(uint8_t *buf, uint16_t len) {
     uint16_t ptr = 0;
-    
+
     memset(buf, 0, len);
 
     switch(cfg_mode) {
@@ -198,7 +198,7 @@ int make_config(uint8_t *buf, uint16_t len) {
     strcpy(buf+ptr, "WP=");
     strncpy(buf+ptr+2, (char*)wifi_psk, 24);
     ptr += 32;
-    
+
     return ptr;
 }
 
@@ -206,7 +206,7 @@ void write_config() {
     uint8_t config_temp[1024];
     int config_len;
     config_len = make_config(config_temp, sizeof(config_temp));
-    
+
     int file = pico_open("config", LFS_O_WRONLY | LFS_O_CREAT);
     if(file < 0)
         return;
@@ -246,7 +246,7 @@ void upload_config() {
         pico_read(file, (uint8_t*)(apple_memory + 0xC800), 1024);
         pico_close(file);
     }
-    
+
     memcpy(config_errbuf, ERR_READY, sizeof(ERR_READY));
 }
 
@@ -318,27 +318,27 @@ void config_handler() {
     if(!memcmp("H=", (uint8_t*)config_cmdbuf, 2)) {
         if(!strcmp("II", config_cmdbuf+2)) {
             current_machine = MACHINE_II;
-            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+            internal_flags &= ~(IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS);
         } else if(!strcmp("IIE", config_cmdbuf+2)) {
             current_machine = MACHINE_IIE;
-            soft_switches &= ~SOFTSW_IIGS_REGS;
-            soft_switches |= SOFTSW_IIE_REGS;
+            internal_flags &= ~IFLAGS_IIGS_REGS;
+            internal_flags |= IFLAGS_IIE_REGS;
         } else if(!strcmp("IIGS", config_cmdbuf+2)) {
             current_machine = MACHINE_IIGS;
-            soft_switches |= SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS;
+            internal_flags |= IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS;
 #if 0
         } else if(!strcmp("B108", config_cmdbuf+2)) {
             current_machine = MACHINE_BASIS;
-            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+            internal_flags &= ~(IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS);
         } else if(!strcmp("P", config_cmdbuf+2)) {
             current_machine = MACHINE_PRAVETZ;
-            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+            internal_flags &= ~(IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS);
         } else if(!strcmp("A7", config_cmdbuf+2)) {
             current_machine = MACHINE_AGAT7;
-            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+            internal_flags &= ~(IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS);
         } else if(!strcmp("A9", config_cmdbuf+2)) {
             current_machine = MACHINE_AGAT9;
-            soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+            internal_flags &= ~(IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS);
 #endif
         }
     } else if(!memcmp("UF", (uint8_t*)config_cmdbuf, 2)) {
@@ -354,7 +354,9 @@ void config_handler() {
     } else if(!memcmp("FORMAT", (uint8_t*)config_cmdbuf, 6)) {
         config_format();
         flash_reboot();
+    } else if(!memcmp("RB", (uint8_t*)config_cmdbuf, 2)) {
+        flash_reboot();
     }
-    
+
     memset(config_cmdbuf, 0x00, 7);
 }

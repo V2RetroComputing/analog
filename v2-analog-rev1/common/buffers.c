@@ -1,5 +1,10 @@
 #include "buffers.h"
 
+volatile uint32_t soft_switches = 0;
+volatile uint32_t internal_flags = 0;
+
+volatile uint8_t reset_state = 0;
+
 volatile uint8_t cardslot = 0;
 volatile uint32_t busactive = 0;
 

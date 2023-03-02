@@ -1,2 +1,2 @@
-uint8_t ssc_rom[2048] = {
+static const uint8_t ssc_rom[2048] = {
 };

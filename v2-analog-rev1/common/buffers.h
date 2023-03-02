@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+extern volatile uint8_t reset_state;
+
 extern volatile uint8_t cardslot;
 extern volatile uint32_t busactive;
 
@@ -57,6 +59,8 @@ extern volatile uint8_t *videx_page;
 
 extern volatile uint32_t soft_switches;
 
+extern volatile uint32_t internal_flags;
+
 #define SOFTSW_TEXT_MODE      0x00000001
 #define SOFTSW_MIX_MODE       0x00000002
 #define SOFTSW_HIRES_MODE     0x00000004
@@ -94,7 +98,7 @@ extern volatile uint32_t soft_switches;
 #define SOFTSW_SHADOW_IO      0x04000000
 
 // V2 Analog specific softswitches
-#define SOFTSW_VIDEX          0x10000000
-#define SOFTSW_TEST           0x20000000
-#define SOFTSW_IIE_REGS       0x40000000
-#define SOFTSW_IIGS_REGS      0x80000000
+#define SOFTSW_TERMINAL       0x10000000
+#define IFLAGS_TEST           0x20000000
+#define IFLAGS_IIE_REGS       0x40000000
+#define IFLAGS_IIGS_REGS      0x80000000

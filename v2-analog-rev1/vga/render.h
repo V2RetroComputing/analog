@@ -26,8 +26,8 @@ extern void render_text40_line(bool p2, unsigned int line);
 extern void render_text80_line(bool p2, unsigned int line);
 extern void render_status_line();
 
-extern void render_videx();
-extern void render_videx_line(unsigned int line);
+extern void render_terminal();
+extern void render_terminal_line(unsigned int line);
 
 extern void render_border(uint count);
 
@@ -45,9 +45,17 @@ extern void render_mixed_dgr();
 
 extern void render_shr();
 
-extern uint_fast32_t text_flasher_mask;
+extern volatile uint_fast32_t text_flasher_mask;
 
 extern void flash_dowork();
 
 extern void vga_init();
 extern void vga_deinit();
+
+
+#define _RGB333(r, g, b) ( \
+    (((((uint)(r) * 256 / 36) + 128) / 256) << 6) | \
+    (((((uint)(g) * 256 / 36) + 128) / 256) << 3) | \
+    ((((uint)(b) * 256 / 36) + 128) / 256) \
+)
+

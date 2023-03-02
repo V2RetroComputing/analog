@@ -7,12 +7,6 @@
 
 static void render_dhgr_line(bool p2, uint line);
 
-#define _RGB333(r, g, b) ( \
-    (((((uint)(r) * 256 / 36) + 128) / 256) << 6) | \
-    (((((uint)(g) * 256 / 36) + 128) / 256) << 3) | \
-    ((((uint)(b) * 256 / 36) + 128) / 256) \
-)
-
 uint16_t dhgr_palette[16] = {
     _RGB333(0x00,0x00,0x00),    // black    0000
     _RGB333(0x00,0x00,0xb4),    // d.blue   1000
@@ -31,7 +25,6 @@ uint16_t dhgr_palette[16] = {
     _RGB333(0xd8,0xd8,0x00),    // yellow   0111
     _RGB333(0xff,0xff,0xff),    // white    1111
 };
-#undef _RGB333
 
 //#define PAGE2SEL (!(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2))
 #define PAGE2SEL ((soft_switches & (SOFTSW_80STORE | SOFTSW_PAGE_2)) == SOFTSW_PAGE_2)
@@ -95,9 +88,9 @@ static void __time_critical_func(render_dhgr_line)(bool p2, uint line) {
         if(soft_switches & SOFTSW_MONOCHROME) {
             // Consume 6 pixels (24 subpixel bits)
             for(j = 0; j < 12; j++) {
-                pixeldata = ((dots & 1) ? (0x1ff) : (0x000));
+                pixeldata = ((dots & 1) ? (text_fore) : (text_back));
                 dots >>= 1;
-                pixeldata |= (((dots & 1) ? (0x1ff) : (0x000))) << 16;
+                pixeldata |= (((dots & 1) ? (text_fore) : (text_back))) << 16;
                 dots >>= 1;
                 sl->data[sl_pos++] = pixeldata;
             }
@@ -124,9 +117,9 @@ static void __time_critical_func(render_dhgr_line)(bool p2, uint line) {
         if(soft_switches & SOFTSW_MONOCHROME) {
             // Consume 8 pixels (32 subpixel bits)
             for(j = 0; j < 16; j++) {
-                pixeldata = ((dots & 1) ? (0x1ff) : (0x000));
+                pixeldata = ((dots & 1) ? (text_fore) : (text_back));
                 dots >>= 1;
-                pixeldata |= (((dots & 1) ? (0x1ff) : (0x000))) << 16;
+                pixeldata |= (((dots & 1) ? (text_fore) : (text_back))) << 16;
                 dots >>= 1;
                 sl->data[sl_pos++] = pixeldata;
             }

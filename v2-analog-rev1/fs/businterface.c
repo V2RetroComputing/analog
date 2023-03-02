@@ -39,7 +39,7 @@ void __time_critical_func(fs_businterface)(uint32_t address, uint32_t value) {
     }
 
     // Shadow the soft-switches by observing all read & write bus cycles
-    if((soft_switches & SOFTSW_IIE_REGS) && ((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0)) {
+    if((internal_flags & IFLAGS_IIE_REGS) && ((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0)) {
         if((address & 0xff80) == 0xc000) {
             switch(address & 0x7f) {
             case 0x00:

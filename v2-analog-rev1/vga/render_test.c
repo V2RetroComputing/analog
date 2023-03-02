@@ -16,8 +16,8 @@ char error_message[32*24+1];
 
 void render_test_init() {
     memset(error_message, ' ', 32*24);
-    memcpy(error_message +   0, "HW: Analog-Rev-1                ", 32);
-    memcpy(error_message +  32, "FW: 23-01-29-145                ", 32);
+    memcpy(error_message +   0, "HARDWARE:         V2 Analog Rev1", 32);
+    memcpy(error_message +  32, "FIRMWARE:  1 Mar 2023 Build 0159", 32);
 
     memcpy(error_message + 128, "     Copyright (C) 2022-2023    ", 32);
     memcpy(error_message + 160, "           David Kuder          ", 32);
@@ -30,16 +30,12 @@ void render_test_init() {
     memcpy(error_message + 544, "     Turn off power & check     ", 32);
     memcpy(error_message + 576, "   for proper card insertion.   ", 32);
 
-#ifdef RASPBERRYPI_PICO_W
     memcpy(error_message + 704, "         serial number:         ", 32);
 
     // Get Pico's Flash Serial Number (Board ID) and terminating null.
     memcpy(error_message + 736, "         ", 8);
     pico_get_unique_board_id_string(error_message + 744, 17);
     memcpy(error_message + 760, "         ", 8);
-#else
-    memcpy(error_message + 736, "          V2-Analog-LC          ", 32);
-#endif
 }
 
 // Clear the error message, in case the user sets 0x20 in terminal switches
@@ -50,7 +46,7 @@ void render_about_init() {
 }
 
 static inline uint_fast8_t __time_critical_func(char_test_bits)(uint_fast8_t ch, uint_fast8_t glyph_line) {
-    uint_fast8_t bits = videx_character_rom[((uint_fast16_t)(ch & 0x7f) << 3) | glyph_line | 0x400];
+    uint_fast8_t bits = terminal_character_rom[((uint_fast16_t)(ch & 0x7f) << 3) | glyph_line | 0x400];
     return bits & 0x7f;
 }
 

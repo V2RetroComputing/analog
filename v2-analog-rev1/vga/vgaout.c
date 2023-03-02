@@ -22,6 +22,8 @@
 
 #define NUM_SCANLINE_BUFFERS 32
 
+static bool vga_initialized = 0;
+
 enum {
     VGA_HSYNC_SM = 0,
     VGA_VSYNC_SM = 1,
@@ -158,27 +160,35 @@ static void vga_dma_irq_handler() {
 
 
 void vga_init() {
-    spin_lock_claim(CONFIG_VGA_SPINLOCK_ID);
-    spin_lock_init(CONFIG_VGA_SPINLOCK_ID);
+    if(!vga_initialized) {
+        spin_lock_claim(CONFIG_VGA_SPINLOCK_ID);
+        spin_lock_init(CONFIG_VGA_SPINLOCK_ID);
 
-    // Setup the PIO state machines
-    vga_hsync_setup(CONFIG_VGA_PIO, VGA_HSYNC_SM);
-    vga_vsync_setup(CONFIG_VGA_PIO, VGA_VSYNC_SM);
-    vga_data_setup(CONFIG_VGA_PIO, VGA_DATA_SM);
+        // Setup the PIO state machines
+        vga_hsync_setup(CONFIG_VGA_PIO, VGA_HSYNC_SM);
+        vga_vsync_setup(CONFIG_VGA_PIO, VGA_VSYNC_SM);
+        vga_data_setup(CONFIG_VGA_PIO, VGA_DATA_SM);
 
-    // Setup the DMA channel for writing to the data PIO state machine
-    vga_dma_channel = dma_claim_unused_channel(true);
-    dma_channel_config c = dma_channel_get_default_config(vga_dma_channel);
-    channel_config_set_transfer_data_size(&c, DMA_SIZE_32);
-    channel_config_set_dreq(&c, pio_get_dreq(CONFIG_VGA_PIO, VGA_DATA_SM, true));
-    dma_channel_configure(vga_dma_channel, &c, &CONFIG_VGA_PIO->txf[VGA_DATA_SM], NULL, 0, false);
+        // Setup the DMA channel for writing to the data PIO state machine
+        vga_dma_channel = dma_claim_unused_channel(true);
+        dma_channel_config c = dma_channel_get_default_config(vga_dma_channel);
+        channel_config_set_transfer_data_size(&c, DMA_SIZE_32);
+        channel_config_set_dreq(&c, pio_get_dreq(CONFIG_VGA_PIO, VGA_DATA_SM, true));
+        dma_channel_configure(vga_dma_channel, &c, &CONFIG_VGA_PIO->txf[VGA_DATA_SM], NULL, 0, false);
 
-    dma_channel_set_irq0_enabled(vga_dma_channel, true);
-    irq_set_exclusive_handler(DMA_IRQ_0, vga_dma_irq_handler);
-    irq_set_enabled(DMA_IRQ_0, true);
+        dma_channel_set_irq0_enabled(vga_dma_channel, true);
+        irq_set_exclusive_handler(DMA_IRQ_0, vga_dma_irq_handler);
+        irq_set_enabled(DMA_IRQ_0, true);
+
+        vga_initialized = 1;
+    }
 
     // Enable all state machines in sync to ensure their instruction cycles line up
     pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
+}
+
+void vga_stop() {
+    pio_set_sm_mask_enabled(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM), false);
 }
 
 void vga_dpms_sleep() {
@@ -187,34 +197,6 @@ void vga_dpms_sleep() {
 
 void vga_dpms_wake() {
     pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
-}
-    
-void vga_deinit() {
-    // Disable DMA IRQ
-    irq_set_enabled(DMA_IRQ_0, false);
-    dma_channel_set_irq0_enabled(vga_dma_channel, false);
-    dma_channel_abort(vga_dma_channel);
-
-    // Release DMA channel
-    dma_channel_unclaim(vga_dma_channel);
-
-    // Disable VGA state machines
-    pio_set_sm_mask_enabled(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM), false);
-
-    // Clear PIO memory
-    pio_clear_instruction_memory(CONFIG_VGA_PIO);
-
-    // Release state machines
-    pio_sm_unclaim(CONFIG_VGA_PIO, VGA_HSYNC_SM);
-    pio_sm_unclaim(CONFIG_VGA_PIO, VGA_VSYNC_SM);
-    pio_sm_unclaim(CONFIG_VGA_PIO, VGA_DATA_SM);
-    
-    // Release Spin Lock
-    spin_lock_unclaim(CONFIG_VGA_SPINLOCK_ID);
-    
-    // Reset the PIO0 block
-    reset_block((1 << 10));
-    unreset_block((1 << 10));
 }
 
 // Set up for a new display frame

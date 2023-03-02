@@ -3,12 +3,24 @@
 #include "render.h"
 #include "vgaout.h"
 
-
-#define _RGB333(r, g, b) ( \
-    (((((uint)(r) * 256 / 36) + 128) / 256) << 6) | \
-    (((((uint)(g) * 256 / 36) + 128) / 256) << 3) | \
-    ((((uint)(b) * 256 / 36) + 128) / 256) \
-)
+uint16_t lores_dot_pattern[16] = {
+    0x0000,
+    0x2222,
+    0x1111,
+    0x3333,
+    0x0888,
+    0x2AAA,
+    0x1999,
+    0x3BBB,
+    0x0444,
+    0x2666,
+    0x1555,
+    0x3777,
+    0x0CCC,
+    0x2EEE,
+    0x1DDD,
+    0x3FFF,
+};
 
 uint16_t lores_palette[16] = {
     _RGB333(0x00,0x00,0x00),    // black
@@ -28,7 +40,6 @@ uint16_t lores_palette[16] = {
     _RGB333(0x90,0xfc,0xb4),    // aqua
     _RGB333(0xff,0xff,0xff),    // white
 };
-#undef _RGB333
 
 
 static void render_lores_line(bool p2, uint line);
@@ -63,7 +74,8 @@ static void __time_critical_func(render_lores_line)(bool p2, uint line) {
     struct vga_scanline *sl1 = vga_prepare_scanline();
     struct vga_scanline *sl2 = vga_prepare_scanline();
     uint sl_pos = 0;
-    uint i;
+    uint i, j;
+    uint32_t color1, color2;
 
     const uint8_t *line_buf = (const uint8_t *)((p2 ? text_p2 : text_p1) + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
 
@@ -74,20 +86,39 @@ static void __time_critical_func(render_lores_line)(bool p2, uint line) {
         sl_pos++;
     }
 
-    for(i=0; i < 40; i+=2) {
-        uint32_t color1 = lores_palette[line_buf[i] & 0xf];
-        uint32_t color2 = lores_palette[(line_buf[i] >> 4) & 0xf];
-        uint32_t color3 = lores_palette[line_buf[i+1] & 0xf];
-        uint32_t color4 = lores_palette[(line_buf[i+1] >> 4) & 0xf];
+    if(soft_switches & SOFTSW_MONOCHROME) {
+        for(i = 0; i < 40; i+=2) {
+            color1 = lores_dot_pattern[line_buf[i] & 0xf] << 14;
+            color2 = lores_dot_pattern[(line_buf[i] >> 4) & 0xf] << 14;
+            color1 |= lores_dot_pattern[line_buf[i+1] & 0xf];
+            color2 |= lores_dot_pattern[(line_buf[i+1] >> 4) & 0xf];
 
-        // Each lores pixel is 7 hires pixels, or 14 VGA pixels wide
-        sl1->data[sl_pos] = (color1|THEN_EXTEND_6) | ((color1|THEN_EXTEND_6) << 16);
-        sl2->data[sl_pos] = (color2|THEN_EXTEND_6) | ((color2|THEN_EXTEND_6) << 16);
-        sl_pos++;
+            for(j = 0; j < 14; j++) {
+                uint32_t pixeldata;
 
-        sl1->data[sl_pos] = (color3|THEN_EXTEND_6) | ((color3|THEN_EXTEND_6) << 16);
-        sl2->data[sl_pos] = (color4|THEN_EXTEND_6) | ((color4|THEN_EXTEND_6) << 16);
-        sl_pos++;
+                pixeldata = (color1 & 0x8000000) ? (text_fore) : (text_back);
+                pixeldata |= (color1 & 0x4000000) ? ((text_fore) << 16) : ((text_back) << 16);
+                color1 <<= 2;
+                sl1->data[sl_pos] = pixeldata;
+
+                pixeldata = (color2 & 0x8000000) ? (text_fore) : (text_back);
+                pixeldata |= (color2 & 0x4000000) ? ((text_fore) << 16) : ((text_back) << 16);
+                sl2->data[sl_pos] = pixeldata;
+                color2 <<= 2;
+
+                sl_pos++;
+            }
+        }
+    } else {
+        for(i = 0; i < 40; i++) {
+            color1 = lores_palette[line_buf[i] & 0xf];
+            color2 = lores_palette[(line_buf[i] >> 4) & 0xf];
+
+            // Each lores pixel is 7 hires pixels, or 14 VGA pixels wide
+            sl1->data[sl_pos] = (color1|THEN_EXTEND_6) | ((color1|THEN_EXTEND_6) << 16);
+            sl2->data[sl_pos] = (color2|THEN_EXTEND_6) | ((color2|THEN_EXTEND_6) << 16);
+            sl_pos++;
+        }
     }
 
     for(i = 0; i < 40/8; i++) {

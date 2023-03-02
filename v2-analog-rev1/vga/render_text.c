@@ -8,7 +8,7 @@
 //#define PAGE2SEL (!(soft_switches & SOFTSW_80STORE) && (soft_switches & SOFTSW_PAGE_2))
 #define PAGE2SEL ((soft_switches & (SOFTSW_80STORE | SOFTSW_PAGE_2)) == SOFTSW_PAGE_2)
 
-uint_fast32_t text_flasher_mask = 0;
+volatile uint_fast32_t text_flasher_mask = 0;
 static uint64_t next_flash_tick = 0;
 
 void update_text_flasher() {
@@ -32,20 +32,20 @@ void update_text_flasher() {
 
 
 static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch, uint_fast8_t glyph_line) {
-    uint_fast8_t bits = character_rom[((uint_fast16_t)ch << 3) | glyph_line] & 0x7f;
+    uint_fast8_t bits, invert;
 
     if((soft_switches & SOFTSW_ALTCHAR) || (ch & 0x80)) {
-        // normal character
-        return bits;
+        // normal / mousetext character
+        invert = 0x00;
+    } else {
+        // flashing character or inverse character
+        invert = (ch & 0x40) ? text_flasher_mask : 0x7f;
+        ch = (ch & 0x3f) | 0x80;
     }
 
-    if(ch & 0x40) {
-        // flashing character
-        return (bits ^ text_flasher_mask);
-    }
+    bits = character_rom[((uint_fast16_t)ch << 3) | glyph_line] & 0x7f;
 
-    // inverse character
-    return bits;
+    return bits ^ invert;
 }
 
 void __time_critical_func(render_text)() {
