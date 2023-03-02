@@ -13,6 +13,9 @@
 #include <pico/cyw43_arch.h>
 #endif
 
+typedef void (*businterface_t)(uint32_t address, uint32_t value);
+volatile businterface_t businterface = NULL;
+
 static void __time_critical_func(core1_loop)() {
     for(;;) {
         uint32_t value = pio_sm_get_blocking(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
@@ -21,10 +24,11 @@ static void __time_critical_func(core1_loop)() {
         // device read access
         if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) != 0) {
             if(CARD_SELECT) {
-                pio_sm_put_blocking(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM, apple_memory[address]);
+                pio_sm_put(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM, apple_memory[address]);
+                //pio_sm_put_blocking(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM, apple_memory[address]);
             }
         }
-        
+
         busactive = 1;
 
         if(CARD_SELECT) {
@@ -38,52 +42,56 @@ static void __time_critical_func(core1_loop)() {
                     apple_memory[address] = value;
                 }
             }
-        }
-
-        switch(current_mode) {
-        case MODE_DIAG:
-            diag_businterface(address, value);
-            break;
-        case MODE_FS:
-            fs_businterface(address, value);
-            break;
-        case MODE_VGACARD:
-            vga_businterface(address, value);
-            break;
-        case MODE_APPLICARD:
-            z80_businterface(address, value);
-            break;
-        case MODE_SERIAL:
-            serial_businterface(address, value);
-            break;
-        case MODE_PARALLEL:
-            parallel_businterface(address, value);
-            break;
-        }
-
-        if(current_machine == MACHINE_AUTO) {
+        } else if(current_machine == MACHINE_AUTO) {
             if((apple_memory[0x0417] == 0xE7) && (apple_memory[0x416] == 0xC9)) { // Apple IIgs
                 current_machine = MACHINE_IIGS;
-                soft_switches &= ~SOFTSW_IIE_REGS;
-                soft_switches |= SOFTSW_IIGS_REGS;
+                internal_flags &= ~IFLAGS_IIE_REGS;
+                internal_flags |= IFLAGS_IIGS_REGS;
             } else if((apple_memory[0x0417] == 0xE5) && (apple_memory[0x416] == 0xAF)) { // Apple //e Enhanced
                 current_machine = MACHINE_IIE;
-                soft_switches |= SOFTSW_IIE_REGS;
-                soft_switches &= ~SOFTSW_IIGS_REGS;
+                internal_flags |= IFLAGS_IIE_REGS;
+                internal_flags &= ~IFLAGS_IIGS_REGS;
             } else if((apple_memory[0x0415] == 0xDD) && (apple_memory[0x413] == 0xE5)) { // Apple //e Unenhanced
                 current_machine = MACHINE_IIE;
-                soft_switches |= SOFTSW_IIE_REGS;
-                soft_switches &= ~SOFTSW_IIGS_REGS;
+                internal_flags |= IFLAGS_IIE_REGS;
+                internal_flags &= ~IFLAGS_IIGS_REGS;
             } else if(apple_memory[0x0410] == 0xD0) { // Apple II/Plus/J-Plus with Autostart
                 current_machine = MACHINE_II;
-                soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+                internal_flags &= ~(IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS);
             } else if((apple_memory[0x07D0] == 0xAA) && (apple_memory[0x07D1] == 0x60)) { // Apple II without Autostart
                 current_machine = MACHINE_II;
-                soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+                internal_flags &= ~(IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS);
             } else if(apple_memory[0x0410] == 0xF2) { // Pravetz!
                 current_machine = MACHINE_PRAVETZ;
-                soft_switches &= ~(SOFTSW_IIE_REGS | SOFTSW_IIGS_REGS);
+                internal_flags &= ~(IFLAGS_IIE_REGS | IFLAGS_IIGS_REGS);
             }
+        } else switch(reset_state) {
+            case 0:
+                if(value == ((0xFFFC << 10) | 0x300 | 0x62))
+                     reset_state++;
+                break;
+            case 1:
+                if(value == ((0xFFFD << 10) | 0x300 | 0xFA))
+                     reset_state++;
+                else
+                     reset_state=0;
+                break;
+            case 2:
+                if((value & 0x3FFFF00) == ((0xFA62 << 10) | 0x300))
+                     reset_state++;
+                else
+                     reset_state=0;
+                break;
+            case 3:
+                soft_switches = SOFTSW_TEXT_MODE;
+
+            default:
+                reset_state = 0;
+                break;
+        }
+
+        if(businterface != NULL) {
+            (*businterface)(address, value);
         }
     }
 }
@@ -92,23 +100,33 @@ static void core0_loop() {
     for(;;) {
         switch(current_mode) {
         case MODE_DIAG:
+            businterface = &diag_businterface;
             diagmain();
             break;
         case MODE_FS:
+            businterface = &fs_businterface;
             fsmain();
             break;
         default:
             current_mode = MODE_VGACARD;
         case MODE_VGACARD:
+            if(cardslot == 0) cardslot = 3;
+            businterface = &vga_businterface;
             vgamain();
             break;
         case MODE_APPLICARD:
+            if(cardslot == 0) cardslot = 4;
+            businterface = &z80_businterface;
             z80main();
             break;
         case MODE_SERIAL:
+            if(cardslot == 0) cardslot = 2;
+            businterface = &serial_businterface;
             serialmain();
             break;
         case MODE_PARALLEL:
+            if(cardslot == 0) cardslot = 1;
+            businterface = &parallel_businterface;
             parallelmain();
             break;
         }
@@ -130,7 +148,7 @@ int main() {
     memcpy((uint8_t*)apple_memory+0xC5F0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFFV2ANALOG", 16);
     memcpy((uint8_t*)apple_memory+0xC6F0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFFV2ANALOG", 16);
     memcpy((uint8_t*)apple_memory+0xC7F0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFFV2ANALOG", 16);
-    
+
     // Sensible defaults if there is no config / fs
     default_config();
 

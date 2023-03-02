@@ -85,10 +85,10 @@ static void __time_critical_func(render_hires_line)(bool p2, uint line) {
         if(soft_switches & SOFTSW_MONOCHROME) {
             // Consume 14 dots
             for(j = 0; j < 7; j++) {
-                uint32_t pixeldata = (dots & 0x80000000) ? (0x1ff) : (0x000);
-                pixeldata |= (dots & 0x40000000) ?
-                    ((uint32_t)0x1ff) << 16 :
-                    ((uint32_t)0x000) << 16;
+                uint32_t pixeldata = (dots & 0x40000000) ? (text_fore) : (text_back);
+                pixeldata |= (dots & 0x20000000) ?
+                    ((text_fore) << 16) :
+                    ((text_back) << 16);
                 dots <<= 2;
                 sl->data[sl_pos] = pixeldata;
                 sl_pos++;

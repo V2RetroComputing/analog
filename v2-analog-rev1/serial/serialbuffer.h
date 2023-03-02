@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include "common/buffers.h"
 
-extern uint8_t ssc_rom[2048];
-
 extern volatile uint8_t *serial_reg;
 
 void serial_rx_advance();

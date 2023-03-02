@@ -1,13 +1,10 @@
 #include "vgabuf.h"
 
-
-// Shadow copy of the Apple soft-switches
-volatile uint32_t soft_switches = 0;
+volatile uint32_t mono_palette = 0;
 
 // The currently programmed character generator ROM for text mode
 uint8_t character_rom[2048];
-uint8_t videx_character_rom[2048];
+uint8_t terminal_character_rom[2048];
 
-volatile uint8_t videx_crtc_reg;
-
-volatile uint8_t terminal_switches;
+volatile uint8_t terminal_row = 0;
+volatile uint8_t terminal_col = 0;

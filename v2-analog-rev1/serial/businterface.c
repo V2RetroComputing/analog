@@ -7,7 +7,7 @@
 #include "serial/serialbuffer.h"
 
 static inline void __time_critical_func(serial_read)(uint32_t address) {
-    switch(address & 0x7) {
+    switch(address & 0xF) {
     case 8: // Read Data from RX FIFO
         serial_rx_advance();
         break;
@@ -15,7 +15,7 @@ static inline void __time_critical_func(serial_read)(uint32_t address) {
 }
 
 static inline void __time_critical_func(serial_write)(uint32_t address, uint32_t value) {
-    switch(address & 0x7) {
+    switch(address & 0xF) {
     case 8: // Write Data to TX FIFO
         serial_tx_push(value & 0xff);
         break;

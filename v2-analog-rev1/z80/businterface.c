@@ -46,10 +46,13 @@ static inline void __time_critical_func(pcpi_write)(uint32_t address, uint32_t v
 }
 
 void __time_critical_func(z80_businterface)(uint32_t address, uint32_t value) {
-    pcpi_reg = apple_memory + (0xC080 | (cardslot << 4));
+    // Reset the Z80 when the Apple II resets
+    if(reset_state == 3) z80_res = 1;
+
     // Shadow parts of the Apple's memory by observing the bus write cycles
     if(CARD_SELECT) {
         if(CARD_DEVSEL) {
+            pcpi_reg = apple_memory + (address & 0xFFF0);
             if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0) {
                 pcpi_write(address, value);
             } else {

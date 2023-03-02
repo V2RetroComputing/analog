@@ -32,6 +32,7 @@ target_sources(v2-analog-${PICO_BOARD} PUBLIC
     common/abus.c
     common/config.c
     common/main.c
+    common/usb_descriptors.c
     diag/businterface.c
     diag/diag.c
     fs/businterface.c
@@ -43,7 +44,7 @@ target_sources(v2-analog-${PICO_BOARD} PUBLIC
     vga/render_hires.c
     vga/render_lores.c
     vga/render_text.c
-    vga/render_videx.c
+    vga/render_80col.c
     vga/render_dhgr.c
     vga/render_dgr.c
     vga/render_shr.c
@@ -69,6 +70,10 @@ target_link_libraries(v2-analog-${PICO_BOARD} PUBLIC
     pico_multicore
     pico_stdlib
     littlefs-lib
+    tinyusb_device
+    tinyusb_board
+    hardware_resets
+    hardware_irq
     hardware_dma
     hardware_pio
 )

@@ -1,4 +1,4 @@
 #include <stdint.h>
 
-uint8_t grappler_rom[2048] = {
+static const uint8_t grappler_rom[2048] = {
 };

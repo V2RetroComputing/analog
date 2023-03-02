@@ -88,7 +88,9 @@ void z80main() {
     z80_res = 1;
 
     while(current_mode == MODE_APPLICARD) {
-        config_handler();
+        if(config_cmdbuf[7] == 0) {
+            config_handler();
+        } else
         if(cardslot != 0) {
             if(z80_res) {
                 rom_shadow = 1;
