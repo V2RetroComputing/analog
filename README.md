@@ -4,7 +4,9 @@
 ![PicoPal Logo](docs/PicoPalLogo.png)
 
 This repo is now an archival copy.
+
 Firmware development will continue to take place in [analog-firmware](https://github.com/V2RetroComputing/analog-firmware)
+
 Hardware development will continue in a new repo shortly.
 
 
