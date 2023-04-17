@@ -1,9 +1,0 @@
-EESchema-DOCLIB  Version 2.0
-#
-$CMP IDT7007PF
-D 16K x 8 Dual-Port SRAM, TQFP-64
-K dual-port ram
-F https://www.idt.com/document/dst/7006-data-sheet
-$ENDCMP
-#
-#End Doc Library

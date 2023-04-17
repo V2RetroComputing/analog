@@ -1,3 +1,15 @@
-[submodule "v2-analog-rev1/lib/littlefs"]
-	path = v2-analog-rev1/lib/littlefs
-	url = https://github.com/lurk101/littlefs-lib
+[submodule "picopal-v1"]
+	path = picopal-v1
+	url = https://github.com/V2RetroComputing/picopal-v1
+[submodule "analog-firmware"]
+	path = analog-firmware
+	url = https://github.com/V2RetroComputing/analog-firmware
+[submodule "analog-utilities"]
+	path = analog-utilities
+	url = https://github.com/V2RetroComputing/analog-utilities
+[submodule "analog-preload"]
+	path = analog-preload
+	url = https://github.com/V2RetroComputing/analog-preload
+[submodule "analog-hardware"]
+	path = analog-hardware
+	url = https://github.com/V2RetroComputing/analog-hardware
